@@ -55,7 +55,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                         user.getProvider() + " account. Please use your " + user.getProvider() +
                         " account to login.");
             }
-            user = updateExistingUser(user, oAuth2UserInfo); // 每次登入後更新使用者資料。
+            // user = updateExistingUser(user, oAuth2UserInfo); // 每次登入後更新使用者資料。
         }else {
             user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo); // 當第一次登入時，把這個 mail 綁定 AuthProvider
         }
@@ -70,6 +70,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         user.setName(oAuth2UserInfo.getName());
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
+        user.setEmailVerified(true);
         return userRepository.save(user);
     }
 

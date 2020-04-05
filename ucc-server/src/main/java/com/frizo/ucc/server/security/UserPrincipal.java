@@ -27,8 +27,10 @@ public class UserPrincipal implements UserDetails, OAuth2User {
 
     // 供一般 auth 使用
     public static UserPrincipal create(User user) {
-        List<GrantedAuthority> authorities = Collections.
-                singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        List<GrantedAuthority> authorities = user.getEmailVerified() ?
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+                :
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_GUEST"));
 
         return new UserPrincipal(
                 user.getId(),

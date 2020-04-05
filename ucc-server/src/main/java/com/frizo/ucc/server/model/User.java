@@ -1,15 +1,18 @@
 package com.frizo.ucc.server.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.frizo.ucc.server.model.audit.DateAudit;
+import com.frizo.ucc.server.model.audit.UserDateAudit;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.Instant;
 
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+public class User extends UserDateAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,6 +37,13 @@ public class User implements Serializable {
     private AuthProvider provider;
 
     private String providerId;
+
+    @JsonIgnore
+    @Column(length = 6)
+    private String verifyCode;
+
+    @JsonIgnore
+    private Instant verifyCodeUpdateAt;
 
     public Long getId() {
         return id;
@@ -97,5 +107,21 @@ public class User implements Serializable {
 
     public void setProviderId(String providerId) {
         this.providerId = providerId;
+    }
+
+    public String getVerifyCode() {
+        return verifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
+    }
+
+    public Instant getVerifyCodeUpdateAt() {
+        return verifyCodeUpdateAt;
+    }
+
+    public void setVerifyCodeUpdateAt(Instant verifyCodeUpdateAt) {
+        this.verifyCodeUpdateAt = verifyCodeUpdateAt;
     }
 }
