@@ -41,6 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public Boolean checkEmailVerifyCode(Long id, String userSendCode) {
         User user = userRepository.getOne(id);
         String verifyCode = user.getVerifyCode();
@@ -49,6 +50,8 @@ public class UserServiceImpl implements UserService {
         boolean verifyStatus = false;
         if (Instant.now().isBefore(expiredTime)){
             verifyStatus = userSendCode.equals(verifyCode);
+            user.setEmailVerified(true);
+            userRepository.save(user);
         }
         return verifyStatus;
     }

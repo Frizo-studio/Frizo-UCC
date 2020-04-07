@@ -8,10 +8,7 @@ import com.frizo.ucc.server.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -21,19 +18,21 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'GUEST')")
     public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
         return userService.getUserbyId(userPrincipal.getId());
     }
 
+    @PreAuthorize("hasRole('GUEST')") // 只有 GUEST 才進得來
     @GetMapping("send/email/verify")
     public void sendVerifyEmail(@CurrentUser UserPrincipal userPrincipal) {
         userService.sendVerifyEmail(userPrincipal.getId());
     }
 
+    @PreAuthorize("hasRole('GUEST')") // 只有 GUEST 才進得來
     @PostMapping("check/email/verify")
-    public ResponseEntity<?> checkverifyEmailCode(@CurrentUser UserPrincipal userPrincipal, String userSendCode) {
-        boolean isSuccess = userService.checkEmailVerifyCode(userPrincipal.getId(), userSendCode);
+    public ResponseEntity<?> checkverifyEmailCode(@CurrentUser UserPrincipal userPrincipal, @RequestBody String verifyCode) {
+        boolean isSuccess = userService.checkEmailVerifyCode(userPrincipal.getId(), verifyCode);
         return isSuccess ?
                ResponseEntity.ok(new ApiResponse(true, "email verify successed"))
                :
