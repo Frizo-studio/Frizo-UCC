@@ -2,6 +2,7 @@ package com.frizo.ucc.server.api;
 
 import com.frizo.ucc.server.model.User;
 import com.frizo.ucc.server.payload.ApiResponse;
+import com.frizo.ucc.server.payload.UserInfo;
 import com.frizo.ucc.server.security.CurrentUser;
 import com.frizo.ucc.server.security.UserPrincipal;
 import com.frizo.ucc.server.service.user.UserService;
@@ -24,13 +25,13 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('GUEST')") // 只有 GUEST 才進得來
-    @GetMapping("send/email/verify")
+    @GetMapping("/send/email/verify")
     public void sendVerifyEmail(@CurrentUser UserPrincipal userPrincipal) {
         userService.sendVerifyEmail(userPrincipal.getId());
     }
 
     @PreAuthorize("hasRole('GUEST')") // 只有 GUEST 才進得來
-    @PostMapping("check/email/verify")
+    @PostMapping("/check/email/verify")
     public ResponseEntity<?> checkverifyEmailCode(@CurrentUser UserPrincipal userPrincipal, @RequestBody String verifyCode) {
         boolean isSuccess = userService.checkEmailVerifyCode(userPrincipal.getId(), verifyCode);
         return isSuccess ?
@@ -38,4 +39,13 @@ public class UserController {
                :
                ResponseEntity.ok(new ApiResponse(false, "email verify failed"));
     }
+
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/userinfo")
+    public ResponseEntity<?> updateUserInfo(@CurrentUser UserPrincipal userPrincipal, UserInfo userInfo) {
+        Long userId = userPrincipal.getId();
+        userService.updateUserInfo(userId, userInfo);
+    }
+
+
 }

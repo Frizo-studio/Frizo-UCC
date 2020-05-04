@@ -17,6 +17,7 @@
         <mysql.version>8.0.11</mysql.version>
         <javaxb.version>2.3.0</javaxb.version>
         <junit.version>4.12</junit.version>
+        <google.service.version>v1-rev382-1.25.0</google.service.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.resource.version>3.1.0</maven.resource.version>
     </properties>
@@ -107,6 +108,14 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
+
+            <!-- google service -->
+            <dependency>
+                <groupId>com.google.apis</groupId>
+                <artifactId>google-api-services-appsactivity</artifactId>
+                <version>${google.service.version}</version>
+            </dependency>
+
 
             <!-- JPA 依賴 -->
             <dependency>

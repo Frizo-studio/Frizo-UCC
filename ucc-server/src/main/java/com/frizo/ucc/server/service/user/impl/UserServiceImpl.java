@@ -3,6 +3,7 @@ package com.frizo.ucc.server.service.user.impl;
 import com.frizo.ucc.server.dao.UserRepository;
 import com.frizo.ucc.server.exception.ResourceNotFoundException;
 import com.frizo.ucc.server.model.User;
+import com.frizo.ucc.server.payload.UserInfo;
 import com.frizo.ucc.server.service.mail.GmailService;
 import com.frizo.ucc.server.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,5 +55,11 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         }
         return verifyStatus;
+    }
+
+    @Override
+    public void updateUserInfo(Long userId, UserInfo userInfo) {
+        // --TODO --
+
     }
 }
