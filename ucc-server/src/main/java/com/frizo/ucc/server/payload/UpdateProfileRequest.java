@@ -2,10 +2,11 @@ package com.frizo.ucc.server.payload;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class UserInfo {
+public class UpdateProfileRequest {
     private String name;
     private MultipartFile avatar;
     private MultipartFile background;
+    private Character gender;
     private int phoneNumber;
     private String address;
     private String collageLocation;
@@ -83,5 +84,13 @@ public class UserInfo {
 
     public void setGrade(String grade) {
         this.grade = grade;
+    }
+
+    public Character getGender() {
+        return gender;
+    }
+
+    public void setGender(Character gender) {
+        this.gender = gender;
     }
 }

@@ -26,6 +26,23 @@ public class User extends UserDateAudit {
 
     private String imageUrl;
 
+    private String backgroundUrl;
+
+    private Character gender;
+
+    @Column(columnDefinition = "integer default 0")
+    private int phoneNumber;
+
+    private String address;
+
+    private String collageLocation;
+
+    private String collageName;
+
+    private String majorSubject;
+
+    private String grade;
+
     @Column(nullable = false)
     private Boolean emailVerified = false;
 
@@ -123,5 +140,69 @@ public class User extends UserDateAudit {
 
     public void setVerifyCodeUpdateAt(Instant verifyCodeUpdateAt) {
         this.verifyCodeUpdateAt = verifyCodeUpdateAt;
+    }
+
+    public String getBackgroundUrl() {
+        return backgroundUrl;
+    }
+
+    public void setBackgroundUrl(String backgroundUrl) {
+        this.backgroundUrl = backgroundUrl;
+    }
+
+    public int getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(int phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCollageLocation() {
+        return collageLocation;
+    }
+
+    public void setCollageLocation(String collageLocation) {
+        this.collageLocation = collageLocation;
+    }
+
+    public String getCollageName() {
+        return collageName;
+    }
+
+    public void setCollageName(String collageName) {
+        this.collageName = collageName;
+    }
+
+    public String getMajorSubject() {
+        return majorSubject;
+    }
+
+    public void setMajorSubject(String majorSubject) {
+        this.majorSubject = majorSubject;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
+
+    public Character getGender() {
+        return gender;
+    }
+
+    public void setGender(Character gender) {
+        this.gender = gender;
     }
 }

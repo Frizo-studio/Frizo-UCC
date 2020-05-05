@@ -9,6 +9,46 @@ import java.util.List;
 public class AppProperties {
     private final Auth auth = new Auth();
     private final OAuth2 oauth2 = new OAuth2();
+    private final FileDir fileDir = new FileDir();
+
+    public static class FileDir {
+        private String avatarDir;
+        private String avatarBaseUrl;
+        private String backgroundDir;
+        private String backgroundBaseUrl;
+
+        public String getAvatarDir() {
+            return this.avatarDir;
+        }
+
+        public void setAvatarDir(String avatarDir) {
+            this.avatarDir = avatarDir;
+        }
+
+        public String getBackgroundDir() {
+            return this.backgroundDir;
+        }
+
+        public void setBackgroundDir(String backgroundDir) {
+            this.backgroundDir = backgroundDir;
+        }
+
+        public String getAvatarBaseUrl() {
+            return avatarBaseUrl;
+        }
+
+        public void setAvatarBaseUrl(String avatarBaseUrl) {
+            this.avatarBaseUrl = avatarBaseUrl;
+        }
+
+        public String getBackgroundBaseUrl() {
+            return backgroundBaseUrl;
+        }
+
+        public void setBackgroundBaseUrl(String backgroundBaseUrl) {
+            this.backgroundBaseUrl = backgroundBaseUrl;
+        }
+    }
 
     public static class Auth {
         private String tokenSecret;
@@ -51,5 +91,9 @@ public class AppProperties {
 
     public OAuth2 getOauth2() {
         return oauth2;
+    }
+
+    public FileDir getFileDir() {
+        return fileDir;
     }
 }

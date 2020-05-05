@@ -109,14 +109,6 @@
                 <version>${mysql.version}</version>
             </dependency>
 
-            <!-- google service -->
-            <dependency>
-                <groupId>com.google.apis</groupId>
-                <artifactId>google-api-services-appsactivity</artifactId>
-                <version>${google.service.version}</version>
-            </dependency>
-
-
             <!-- JPA 依賴 -->
             <dependency>
                 <groupId>javax.xml.bind</groupId>

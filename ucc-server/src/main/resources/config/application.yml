@@ -19,6 +19,10 @@ spring:                          #Spring Config#                         ###
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
 
+  servlet:
+    multipart:
+      max-file-size: 2MB
+
   # Devtool
   devtools:
     restart:
@@ -67,3 +71,9 @@ app:                            #App Auth Config#                        ###
       - http://localhost:3000/oauth2/redirect
       - myandroidapp://oauth2/redirect
       - myiosapp://oauth2/redirect
+
+  fileDir:
+    avatarDir: D://frizo/ucc/resource/avatar
+    avatarBaseUrl: http://127.0.0.1:9090/avatar/
+    backgroundDir: D://frizo/ucc/resource/background
+    backgroundBaseUrl: http://127.0.0.1:9090/background/
