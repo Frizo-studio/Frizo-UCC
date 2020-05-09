@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class TokenProvider {
@@ -27,8 +29,11 @@ public class TokenProvider {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getTokenExpirationMsec());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userPrincipal.getId());
+        claims.put("securityCode", userPrincipal.getSecurityCode());
         return Jwts.builder()
-                .setSubject(Long.toString(userPrincipal.getId()))
+                .setClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(key)
@@ -40,7 +45,15 @@ public class TokenProvider {
                 .setSigningKey(key)
                 .parseClaimsJws(token)
                 .getBody();
-        return Long.parseLong(claims.getSubject()); // userId
+        return claims.get("userId", Long.class); // userId
+    }
+
+    public String getUserSecurityCodeFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(key)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("securityCode", String.class);
     }
 
     public boolean validateToken(String authToken) {

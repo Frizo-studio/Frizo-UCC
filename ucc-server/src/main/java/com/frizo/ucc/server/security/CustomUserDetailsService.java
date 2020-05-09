@@ -1,7 +1,9 @@
 package com.frizo.ucc.server.security;
 
 import com.frizo.ucc.server.dao.UserRepository;
+import com.frizo.ucc.server.exception.BadRequestException;
 import com.frizo.ucc.server.exception.ResourceNotFoundException;
+import com.frizo.ucc.server.model.AuthProvider;
 import com.frizo.ucc.server.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,16 +21,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserPrincipal loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with email : " + email)
                 );
+        if (!user.getProvider().equals(AuthProvider.local)){
+            throw new BadRequestException("your account can't login with local provider");
+        }
         return UserPrincipal.create(user);
     }
 
     @Transactional
-    public UserDetails loadUserById(Long id) {
+    public UserPrincipal loadUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("User", "id", id)
         );

@@ -4,8 +4,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class UpdateProfileRequest {
     private String name;
-    private MultipartFile avatar;
-    private MultipartFile background;
     private Character gender;
     private int phoneNumber;
     private String address;
@@ -20,22 +18,6 @@ public class UpdateProfileRequest {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public MultipartFile getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(MultipartFile avatar) {
-        this.avatar = avatar;
-    }
-
-    public MultipartFile getBackground() {
-        return background;
-    }
-
-    public void setBackground(MultipartFile background) {
-        this.background = background;
     }
 
     public int getPhoneNumber() {

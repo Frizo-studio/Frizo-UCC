@@ -15,14 +15,16 @@ public class UserPrincipal implements UserDetails, OAuth2User {
     private Long id;
     private String email;
     private String password;
+    private String securityCode;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Long id, String email, String password, String securityCode, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
+        this.securityCode = securityCode;
     }
 
     // 供一般 auth 使用
@@ -36,6 +38,7 @@ public class UserPrincipal implements UserDetails, OAuth2User {
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getSecurityCode(),
                 authorities
         );
     }
@@ -53,6 +56,10 @@ public class UserPrincipal implements UserDetails, OAuth2User {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getSecurityCode() {
+        return securityCode;
     }
 
     @Override

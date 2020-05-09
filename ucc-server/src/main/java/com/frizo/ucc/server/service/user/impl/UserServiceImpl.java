@@ -3,6 +3,7 @@ package com.frizo.ucc.server.service.user.impl;
 import com.frizo.ucc.server.config.AppProperties;
 import com.frizo.ucc.server.dao.UserRepository;
 import com.frizo.ucc.server.exception.BadRequestException;
+import com.frizo.ucc.server.exception.InternalSeverErrorException;
 import com.frizo.ucc.server.exception.ResourceNotFoundException;
 import com.frizo.ucc.server.model.User;
 import com.frizo.ucc.server.payload.UpdateProfileRequest;
@@ -10,6 +11,7 @@ import com.frizo.ucc.server.service.mail.GmailService;
 import com.frizo.ucc.server.service.user.UserService;
 import com.frizo.ucc.server.utils.files.FrizoFileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,8 +61,11 @@ public class UserServiceImpl implements UserService {
         boolean verifyStatus = false;
         if (Instant.now().isBefore(expiredTime)){
             verifyStatus = userSendCode.equals(verifyCode);
-            user.setEmailVerified(true);
-            userRepository.save(user);
+            if (verifyStatus) {
+                user.setEmailVerified(true);
+                user.setVerifyCode(null);
+                userRepository.save(user);
+            }
         }
         return verifyStatus;
     }
@@ -70,20 +75,7 @@ public class UserServiceImpl implements UserService {
         if (updateProfileRequest == null){
             throw new BadRequestException("您未上傳任何資料。");
         }
-        System.out.println("username: -------->>>>> " + updateProfileRequest.getName());
-        MultipartFile avatar = updateProfileRequest.getAvatar();
-        MultipartFile background = updateProfileRequest.getBackground();
         User user = userRepository.getOne(id);
-        if (avatar!= null && !avatar.isEmpty()) {
-            String avatarName = FrizoFileUtils.storePhoto(avatar, appProperties.getFileDir().getAvatarDir());
-            String avatarUrl = appProperties.getFileDir().getAvatarBaseUrl() + avatarName;
-            user.setImageUrl(avatarUrl);
-        }
-        if (background!= null && !background.isEmpty()) {
-            String bgName = FrizoFileUtils.storePhoto(background, appProperties.getFileDir().getBackgroundDir());
-            String bgUrl = appProperties.getFileDir().getAvatarBaseUrl() + bgName;
-            user.setBackgroundUrl(bgUrl);
-        }
         user.setName(updateProfileRequest.getName());
         user.setAddress(updateProfileRequest.getAddress());
         user.setPhoneNumber(updateProfileRequest.getPhoneNumber());
@@ -93,5 +85,39 @@ public class UserServiceImpl implements UserService {
         user.setMajorSubject(updateProfileRequest.getMajorSubject());
         user.setGender(updateProfileRequest.getGender());
         return userRepository.save(user);
+    }
+
+    @Override
+    public String updateUserAvatar(Long id, MultipartFile avatar) {
+        if (avatar == null || avatar.isEmpty()){
+            throw new BadRequestException("您並未上傳頭像文件");
+        }
+        User user = userRepository.getOne(id);
+        try{
+            String avatarName = FrizoFileUtils.storePhoto(avatar, appProperties.getFileDir().getAvatarDir());
+            String avatarUrl = appProperties.getFileDir().getAvatarBaseUrl() + avatarName;
+            user.setImageUrl(avatarUrl);
+            userRepository.save(user);
+        }catch (Exception ex){
+            throw new InternalSeverErrorException("文件伺服器發生錯誤問題", ex);
+        }
+        return user.getImageUrl();
+    }
+
+    @Override
+    public String updateProfileBackground(Long id, MultipartFile background) {
+        if (background == null || background.isEmpty()){
+            throw new BadRequestException("您並未上傳背景圖文件");
+        }
+        User user = userRepository.getOne(id);
+        try{
+            String bgName = FrizoFileUtils.storePhoto(background, appProperties.getFileDir().getBackgroundDir());
+            String bgUrl = appProperties.getFileDir().getBackgroundBaseUrl() + bgName;
+            user.setBackgroundUrl(bgUrl);
+            userRepository.save(user);
+        }catch (Exception ex){
+            throw new InternalSeverErrorException("文件伺服器發生錯誤問題", ex);
+        }
+        return user.getBackgroundUrl();
     }
 }

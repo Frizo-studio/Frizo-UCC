@@ -49,6 +49,9 @@ public class User extends UserDateAudit {
     @JsonIgnore
     private String password;
 
+    @JsonIgnore
+    private String securityCode;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
@@ -204,5 +207,13 @@ public class User extends UserDateAudit {
 
     public void setGender(Character gender) {
         this.gender = gender;
+    }
+
+    public String getSecurityCode() {
+        return securityCode;
+    }
+
+    public void setSecurityCode(String securityCode) {
+        this.securityCode = securityCode;
     }
 }

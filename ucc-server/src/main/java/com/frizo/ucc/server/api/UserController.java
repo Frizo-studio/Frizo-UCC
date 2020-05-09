@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -33,8 +34,8 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('GUEST')") // 只有 GUEST 才進得來
-    @PostMapping("/check/email/verify")
-    public ResponseEntity<?> checkverifyEmailCode(@CurrentUser UserPrincipal userPrincipal, @RequestBody String verifyCode) {
+    @GetMapping("/check/email/verify")
+    public ResponseEntity<?> checkverifyEmailCode(@CurrentUser UserPrincipal userPrincipal, @RequestParam("verifyCode") String verifyCode) {
         boolean isSuccess = userService.checkEmailVerifyCode(userPrincipal.getId(), verifyCode);
         return isSuccess ?
                ResponseEntity.ok(new ApiResponse(true, "email verify successed"))
@@ -44,9 +45,29 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('USER', 'GUEST')")
     @PostMapping("/update/userinfo")
-    public User updateUserInfo(@CurrentUser UserPrincipal userPrincipal, UpdateProfileRequest updateProfileRequest) throws IOException {
+    public User updateUserInfo(@CurrentUser UserPrincipal userPrincipal, @RequestBody UpdateProfileRequest updateProfileRequest) throws IOException {
         User updatedUserInfo = userService.updateUserInfo(userPrincipal.getId(), updateProfileRequest);
         return updatedUserInfo;
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'GUEST')")
+    @PostMapping("/update/avatar")
+    public ResponseEntity<?> updateUserAvatar(@CurrentUser UserPrincipal userPrincipal,@RequestBody MultipartFile avatar) throws IOException {
+        String avatarUrl = userService.updateUserAvatar(userPrincipal.getId(), avatar);
+        return avatar != null?
+                ResponseEntity.ok(new ApiResponse(true, avatarUrl))
+                :
+                ResponseEntity.ok(new ApiResponse(false, "avatar upload failed."));
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'GUEST')")
+    @PostMapping("/update/background")
+    public ResponseEntity<?> updateProfileBackground(@CurrentUser UserPrincipal userPrincipal,@RequestBody MultipartFile background) throws IOException {
+        String backgroundUrl = userService.updateProfileBackground(userPrincipal.getId(), background);
+        return backgroundUrl != null?
+                ResponseEntity.ok(new ApiResponse(true, backgroundUrl))
+                :
+                ResponseEntity.ok(new ApiResponse(false, "background upload failed."));
     }
 }
 

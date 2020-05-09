@@ -7,6 +7,7 @@ import com.frizo.ucc.server.model.User;
 import com.frizo.ucc.server.security.UserPrincipal;
 import com.frizo.ucc.server.security.oauth2.user.OAuth2UserInfo;
 import com.frizo.ucc.server.security.oauth2.user.OAuth2UserInfoFactory;
+import com.frizo.ucc.server.utils.auth.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -71,6 +72,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
         user.setEmailVerified(true);
+        user.setSecurityCode(SecurityUtils.generateSecurityCode());
         return userRepository.save(user);
     }
 
