@@ -41,9 +41,9 @@ public class UserController {
     public ResponseEntity<?> checkverifyEmailCode(@CurrentUser UserPrincipal userPrincipal, @RequestParam("verifyCode") String verifyCode) {
         boolean isSuccess = userService.checkEmailVerifyCode(userPrincipal.getId(), verifyCode);
         return isSuccess ?
-               ResponseEntity.ok(new ApiResponse<>(true, "email 驗證成功", null))
-               :
-               ResponseEntity.ok(new ApiResponse<>(false, "email 驗證失敗", null));
+                ResponseEntity.ok(new ApiResponse<>(true, "email 驗證成功", null))
+                :
+                ResponseEntity.ok(new ApiResponse<>(false, "email 驗證失敗", null));
     }
 
     @PreAuthorize("hasAnyRole('USER', 'GUEST')")
@@ -55,9 +55,9 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('USER', 'GUEST')")
     @PostMapping("/update/avatar")
-    public ResponseEntity<?> updateUserAvatar(@CurrentUser UserPrincipal userPrincipal,@RequestBody MultipartFile avatar) {
+    public ResponseEntity<?> updateUserAvatar(@CurrentUser UserPrincipal userPrincipal, @RequestBody MultipartFile avatar) {
         String avatarUrl = userService.updateUserAvatar(userPrincipal.getId(), avatar);
-        return avatar != null?
+        return avatar != null ?
                 ResponseEntity.ok(new ApiResponse<>(true, "Avatar 更新成功", avatarUrl))
                 :
                 ResponseEntity.ok(new ApiResponse<>(false, "avatar 更新失敗", null));
@@ -65,13 +65,14 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('USER', 'GUEST')")
     @PostMapping("/update/background")
-    public ResponseEntity<?> updateProfileBackground(@CurrentUser UserPrincipal userPrincipal,@RequestBody MultipartFile background) throws IOException {
+    public ResponseEntity<?> updateProfileBackground(@CurrentUser UserPrincipal userPrincipal, @RequestBody MultipartFile background) {
         String backgroundUrl = userService.updateProfileBackground(userPrincipal.getId(), background);
-        return backgroundUrl != null?
+        return backgroundUrl != null ?
                 ResponseEntity.ok(new ApiResponse<>(true, "background 上傳失敗", backgroundUrl))
                 :
                 ResponseEntity.ok(new ApiResponse<>(false, "background 上傳失敗", null));
     }
+
 }
 
 

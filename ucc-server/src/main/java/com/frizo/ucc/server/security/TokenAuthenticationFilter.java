@@ -3,7 +3,6 @@ package com.frizo.ucc.server.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,7 +28,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 Long userId = tokenProvider.getUserIdFromToken(jwt);
                 String securityCode = tokenProvider.getUserSecurityCodeFromToken(jwt);
                 UserPrincipal userPrincipal = customUserDetailsService.loadUserById(userId);
-                if (userPrincipal.getSecurityCode().equals(securityCode)){
+                if (userPrincipal.getSecurityCode().equals(securityCode)) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -43,7 +42,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private String getJwtFromRequest(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7, bearerToken.length());
         }
         return null;

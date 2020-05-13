@@ -16,8 +16,10 @@ import com.frizo.ucc.server.service.mail.GmailService;
 import com.frizo.ucc.server.utils.auth.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -57,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public Long getIdAfterRegistered(SignUpRequest request) throws RequestProcessException {
-        if(userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new RequestProcessException("Email 已被註冊使用。");
         }
         // Creating user's account
@@ -77,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
     public String getEmailAfterChangePassword(Long id, ChangePasswordRequest request) throws RequestProcessException {
         User user = userRepository.getOne(id);
 
-        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())){
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new RequestProcessException("舊密碼輸入錯誤，請稍後重試。");
         }
         user.setSecurityCode(SecurityUtils.generateSecurityCode());
@@ -93,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
         new Random().ints(6, 0, 10).forEach(sb::append);
         String verifyCode = sb.toString();
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (!optionalUser.isPresent()){
+        if (!optionalUser.isPresent()) {
             throw new ResourceNotFoundException("Account", "Email", email);
         }
         User user = optionalUser.get();
@@ -107,24 +109,24 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void resetPassword(ResetPasswordRequest request) throws BadRequestException, ResourceNotFoundException {
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
-        if (!optionalUser.isPresent()){
+        if (!optionalUser.isPresent()) {
             throw new ResourceNotFoundException("Account", "Email", request.getEmail());
         }
         User user = optionalUser.get();
         Instant codeUpdatedTime = user.getVerifyCodeUpdateAt();
         Instant expiredTime = codeUpdatedTime.plusSeconds(180);
         boolean verifyStatus = false;
-        if (Instant.now().isBefore(expiredTime)){
+        if (Instant.now().isBefore(expiredTime)) {
             verifyStatus = request.getVerifyCode().equals(user.getVerifyCode());
-            if (verifyStatus){
+            if (verifyStatus) {
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
                 user.setSecurityCode(SecurityUtils.generateSecurityCode());
                 user.setVerifyCode(null);
                 userRepository.save(user);
-            }else{
+            } else {
                 throw new RequestProcessException("驗證碼輸入錯誤");
             }
-        }else {
+        } else {
             throw new RequestProcessException("驗證碼時效已過期");
         }
     }

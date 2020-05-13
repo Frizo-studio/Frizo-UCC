@@ -6,7 +6,6 @@ import com.frizo.ucc.server.exception.ResourceNotFoundException;
 import com.frizo.ucc.server.model.AuthProvider;
 import com.frizo.ucc.server.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,10 +23,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserPrincipal loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with email : " + email)
+                        new ResourceNotFoundException("帳號不存在")
                 );
         if (!user.getProvider().equals(AuthProvider.local)){
-            throw new BadRequestException("your account can't login with local provider");
+            throw new BadRequestException("此 email 帳號已由服務商 " + user.getProvider() + " 註冊使用。");
         }
         return UserPrincipal.create(user);
     }
