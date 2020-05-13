@@ -1,12 +1,14 @@
-package com.frizo.ucc.server.payload;
+package com.frizo.ucc.server.payload.response;
 
-public class ApiResponse {
+public class ApiResponse<T> {
     private boolean success;
     private String message;
+    private T result;
 
-    public ApiResponse(boolean success, String message) {
+    public ApiResponse(boolean success, String message, T result) {
         this.success = success;
         this.message = message;
+        this.result = result;
     }
 
     public boolean isSuccess() {
@@ -23,5 +25,13 @@ public class ApiResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public T getResult() {
+        return result;
+    }
+
+    public void setResult(T result) {
+        this.result = result;
     }
 }

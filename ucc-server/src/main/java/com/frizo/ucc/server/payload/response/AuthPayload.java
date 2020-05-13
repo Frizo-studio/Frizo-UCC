@@ -1,10 +1,10 @@
-package com.frizo.ucc.server.payload;
+package com.frizo.ucc.server.payload.response;
 
-public class AuthResponse {
+public class AuthPayload {
     private String accessToken;
     private String tokenType = "Bearer";
 
-    public AuthResponse(String token) {
+    public AuthPayload(String token) {
         this.accessToken = token;
     }
 

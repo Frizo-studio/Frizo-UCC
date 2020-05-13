@@ -6,12 +6,11 @@ import com.frizo.ucc.server.exception.BadRequestException;
 import com.frizo.ucc.server.exception.InternalSeverErrorException;
 import com.frizo.ucc.server.exception.ResourceNotFoundException;
 import com.frizo.ucc.server.model.User;
-import com.frizo.ucc.server.payload.UpdateProfileRequest;
+import com.frizo.ucc.server.payload.request.UpdateProfileRequest;
 import com.frizo.ucc.server.service.mail.GmailService;
 import com.frizo.ucc.server.service.user.UserService;
 import com.frizo.ucc.server.utils.files.FrizoFileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUserInfo(Long id, UpdateProfileRequest updateProfileRequest) throws IOException {
+    public User updateUserInfo(Long id, UpdateProfileRequest updateProfileRequest){
         if (updateProfileRequest == null){
             throw new BadRequestException("您未上傳任何資料。");
         }

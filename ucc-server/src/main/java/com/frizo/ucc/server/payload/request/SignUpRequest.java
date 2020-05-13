@@ -1,4 +1,4 @@
-package com.frizo.ucc.server.payload;
+package com.frizo.ucc.server.payload.request;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

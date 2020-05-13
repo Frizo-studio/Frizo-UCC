@@ -1,4 +1,4 @@
-package com.frizo.ucc.server.payload;
+package com.frizo.ucc.server.payload.request;
 
 import org.springframework.web.multipart.MultipartFile;
 

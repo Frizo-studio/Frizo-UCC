@@ -1,9 +1,9 @@
 package com.frizo.ucc.server.service.auth;
 
-import com.frizo.ucc.server.payload.ChangePasswordRequest;
-import com.frizo.ucc.server.payload.LoginRequest;
-import com.frizo.ucc.server.payload.ResetPasswordRequest;
-import com.frizo.ucc.server.payload.SignUpRequest;
+import com.frizo.ucc.server.payload.request.ChangePasswordRequest;
+import com.frizo.ucc.server.payload.request.LoginRequest;
+import com.frizo.ucc.server.payload.request.ResetPasswordRequest;
+import com.frizo.ucc.server.payload.request.SignUpRequest;
 
 public interface AuthService {
     String getTokenByLogin(LoginRequest request);

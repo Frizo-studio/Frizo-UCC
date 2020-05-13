@@ -1,6 +1,11 @@
 package com.frizo.ucc.server.api;
 
-import com.frizo.ucc.server.payload.*;
+import com.frizo.ucc.server.payload.request.ChangePasswordRequest;
+import com.frizo.ucc.server.payload.request.LoginRequest;
+import com.frizo.ucc.server.payload.request.ResetPasswordRequest;
+import com.frizo.ucc.server.payload.request.SignUpRequest;
+import com.frizo.ucc.server.payload.response.ApiResponse;
+import com.frizo.ucc.server.payload.response.AuthPayload;
 import com.frizo.ucc.server.security.CurrentUser;
 import com.frizo.ucc.server.security.UserPrincipal;
 import com.frizo.ucc.server.service.auth.AuthService;
@@ -24,55 +29,41 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         String token = authService.getTokenByLogin(loginRequest);
-        return ResponseEntity.ok(new AuthResponse(token));
+        ApiResponse<AuthPayload> response = new ApiResponse<>(true, "登入成功", new AuthPayload(token));
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        try {
-            Long userId = authService.getIdAfterRegistered(signUpRequest);
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentContextPath().path("/user/me")
-                    .buildAndExpand(userId).toUri();
-            return ResponseEntity.created(location)
-                    .body(new ApiResponse(true, "註冊成功。"));
-        }catch (Exception ex){
-            return ResponseEntity.ok(new ApiResponse(false, ex.getMessage()));
-        }
+        Long userId = authService.getIdAfterRegistered(signUpRequest);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/user/me")
+                .buildAndExpand(userId).toUri();
+        return ResponseEntity.created(location)
+                .body(new ApiResponse<>(true, "註冊成功", null));
     }
 
     @PreAuthorize("hasAnyRole('USER', 'GUEST')")
     @PostMapping("/change/password")
-    public ResponseEntity<?> changePassword(@CurrentUser UserPrincipal userPrincipal,@RequestBody @Valid ChangePasswordRequest request) {
-        try{
-            String email = authService.getEmailAfterChangePassword(userPrincipal.getId(), request);
-            LoginRequest changePasswdRequest = new LoginRequest();
-            changePasswdRequest.setEmail(email);
-            changePasswdRequest.setPassword(request.getNewPassword());
-            String newToken = authService.getTokenByLogin(changePasswdRequest);
-            return ResponseEntity.ok(new AuthResponse(newToken));
-        }catch (Exception ex){
-            return ResponseEntity.ok(new ApiResponse(false, ex.getMessage()));
-        }
+    public ResponseEntity<?> changePassword(@CurrentUser UserPrincipal userPrincipal, @RequestBody @Valid ChangePasswordRequest request) {
+        String email = authService.getEmailAfterChangePassword(userPrincipal.getId(), request);
+        LoginRequest changePasswdRequest = new LoginRequest();
+        changePasswdRequest.setEmail(email);
+        changePasswdRequest.setPassword(request.getNewPassword());
+        String newToken = authService.getTokenByLogin(changePasswdRequest);
+        ApiResponse<AuthPayload> response = new ApiResponse<>(true, "密碼修該成功", new AuthPayload(newToken));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/send/forget/password/verify")
-    public ApiResponse sendVerifyEmail(@RequestParam("email") @Email String email) {
-        try{
-            authService.sendForgotPasswordVerifyCodeEmail(email);
-        }catch (Exception ex){
-            return new ApiResponse(false, ex.getMessage());
-        }
-        return new ApiResponse(true, "verify email already sended.");
+    public ResponseEntity<?> sendVerifyEmail(@RequestParam("email") @Email String email) {
+        authService.sendForgotPasswordVerifyCodeEmail(email);
+        return ResponseEntity.ok(new ApiResponse<>(true, "修改密碼驗證信已寄出", null));
     }
 
     @PostMapping("/reset/password")
-    public ApiResponse resetPassword(@RequestBody @Valid ResetPasswordRequest resetPasswordRequest){
-        try {
-            authService.resetPassword(resetPasswordRequest);
-        }catch (Exception ex){
-            return new ApiResponse(false, ex.getMessage());
-        }
-        return new ApiResponse(true, "password has been changed.");
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest resetPasswordRequest) {
+        authService.resetPassword(resetPasswordRequest);
+        return ResponseEntity.ok(new ApiResponse<>(true, "密碼重製完成", null));
     }
 }
