@@ -4,6 +4,7 @@ import com.frizo.ucc.server.config.AppProperties;
 import com.frizo.ucc.server.dao.UserRepository;
 import com.frizo.ucc.server.exception.BadRequestException;
 import com.frizo.ucc.server.exception.InternalSeverErrorException;
+import com.frizo.ucc.server.exception.RequestProcessException;
 import com.frizo.ucc.server.exception.ResourceNotFoundException;
 import com.frizo.ucc.server.model.User;
 import com.frizo.ucc.server.payload.request.UpdateProfileRequest;
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
             user.setImageUrl(avatarUrl);
             userRepository.save(user);
         }catch (Exception ex){
-            throw new InternalSeverErrorException("文件伺服器發生錯誤問題", ex);
+            throw new RequestProcessException(ex.getMessage());
         }
         return user.getImageUrl();
     }

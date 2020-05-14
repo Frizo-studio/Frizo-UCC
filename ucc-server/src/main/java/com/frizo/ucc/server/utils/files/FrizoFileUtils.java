@@ -32,12 +32,12 @@ public class FrizoFileUtils {
     private static void checkFileExtensionName(String fileExtensionName) {
         fileExtensionName = fileExtensionName.toLowerCase();
         if (
-                fileExtensionName.equals("jpg") ||
-                fileExtensionName.equals("jepg") ||
-                fileExtensionName.equals("png") ||
-                fileExtensionName.equals("svg") ||
-                fileExtensionName.equals("heif") ||
-                fileExtensionName.equals("heic")
+                fileExtensionName.equals(".jpg") ||
+                fileExtensionName.equals(".jepg") ||
+                fileExtensionName.equals(".png") ||
+                fileExtensionName.equals(".svg") ||
+                fileExtensionName.equals(".heif") ||
+                fileExtensionName.equals(".heic")
         ){
             return;
         }else{
