@@ -6,12 +6,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @ControllerAdvice
 public class ExceptionController {
+
+    private ObjectError error;
 
     @ExceptionHandler({RequestProcessException.class})
     public final ResponseEntity<?> handleRequestProcessException(Exception ex) {
@@ -60,9 +68,15 @@ public class ExceptionController {
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    public final ResponseEntity<?> handleMethodArgumentNotValidException(Exception ex) {
+    public final ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String[] codeArray = error.getCodes()[0].split("\\.");
+            String fieldName = codeArray[codeArray.length-1];
+            errorMap.put(fieldName, error.getDefaultMessage());
+        });
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ApiResponse<>(false, "欄位輸入不合法。", null));
+                .body(new ApiResponse<>(false, "您輸入的格式不符合規範", errorMap));
     }
 
 }

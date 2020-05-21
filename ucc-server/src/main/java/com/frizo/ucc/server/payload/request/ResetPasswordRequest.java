@@ -4,14 +4,14 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 public class ResetPasswordRequest {
-    @NotBlank
+    @NotBlank(message = "Email 欄位不可為空")
     @Email
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "密碼欄位不可為空")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "驗證碼碼欄位不可為空")
     private String verifyCode;
 
     public String getEmail() {

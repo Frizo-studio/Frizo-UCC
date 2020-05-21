@@ -4,10 +4,10 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 public class ChangePasswordRequest {
-    @NotBlank
+    @NotBlank(message="舊密碼欄位不可為空")
     private String oldPassword;
 
-    @NotBlank
+    @NotBlank(message="新密碼欄位不可為空")
     private String newPassword;
 
     public String getOldPassword() {
