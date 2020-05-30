@@ -1,4 +1,4 @@
-package com.frizo.ucc.server.dao;
+package com.frizo.ucc.server.dao.user;
 
 import com.frizo.ucc.server.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

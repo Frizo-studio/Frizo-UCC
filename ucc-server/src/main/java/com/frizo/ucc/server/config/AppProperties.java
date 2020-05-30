@@ -16,6 +16,8 @@ public class AppProperties {
         private String avatarBaseUrl;
         private String backgroundDir;
         private String backgroundBaseUrl;
+        private String dmDir;
+        private String dmBaseUrl;
 
         public String getAvatarDir() {
             return this.avatarDir;
@@ -47,6 +49,22 @@ public class AppProperties {
 
         public void setBackgroundBaseUrl(String backgroundBaseUrl) {
             this.backgroundBaseUrl = backgroundBaseUrl;
+        }
+
+        public String getDmDir() {
+            return dmDir;
+        }
+
+        public void setDmDir(String dmDir) {
+            this.dmDir = dmDir;
+        }
+
+        public String getDmBaseUrl() {
+            return dmBaseUrl;
+        }
+
+        public void setDmBaseUrl(String dmBaseUrl) {
+            this.dmBaseUrl = dmBaseUrl;
         }
     }
 

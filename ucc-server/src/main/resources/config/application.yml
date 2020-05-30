@@ -77,3 +77,5 @@ app:                            #App Auth Config#                        ###
     avatarBaseUrl: http://127.0.0.1:9090/avatar/
     backgroundDir: D://frizo/ucc/resource/background
     backgroundBaseUrl: http://127.0.0.1:9090/background/
+    dmDir: D://frizo/ucc/resource/dm
+    dmBaseUrl: http://127.0.0.1:9090/dm/

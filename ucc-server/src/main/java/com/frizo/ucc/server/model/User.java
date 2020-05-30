@@ -1,20 +1,24 @@
 package com.frizo.ucc.server.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.frizo.ucc.server.model.audit.DateAudit;
 import com.frizo.ucc.server.model.audit.UserDateAudit;
+
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import javax.validation.constraints.Size;
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
 public class User extends UserDateAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @Column(nullable = false)
@@ -43,27 +47,33 @@ public class User extends UserDateAudit {
 
     private String grade;
 
+    @Length(max = 200)
+    private String description;
+
     @Column(nullable = false)
     private Boolean emailVerified = false;
 
-    @JsonIgnore
     private String password;
 
-    @JsonIgnore
     private String securityCode;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private AuthProvider provider;
 
     private String providerId;
 
-    @JsonIgnore
     @Column(length = 6)
     private String verifyCode;
 
-    @JsonIgnore
     private Instant verifyCodeUpdateAt;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 30)
+    @Size(max = 7)
+    @JoinColumn(name="user_id")
+    private List<Event> eventList;
 
     public Long getId() {
         return id;
@@ -215,5 +225,21 @@ public class User extends UserDateAudit {
 
     public void setSecurityCode(String securityCode) {
         this.securityCode = securityCode;
+    }
+
+    public List<Event> getEventList() {
+        return eventList;
+    }
+
+    public void setEventList(List<Event> eventList) {
+        this.eventList = eventList;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

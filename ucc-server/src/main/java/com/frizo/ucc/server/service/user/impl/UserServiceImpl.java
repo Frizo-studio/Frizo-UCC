@@ -1,22 +1,23 @@
 package com.frizo.ucc.server.service.user.impl;
 
 import com.frizo.ucc.server.config.AppProperties;
-import com.frizo.ucc.server.dao.UserRepository;
+import com.frizo.ucc.server.dao.user.UserRepository;
 import com.frizo.ucc.server.exception.BadRequestException;
 import com.frizo.ucc.server.exception.InternalSeverErrorException;
 import com.frizo.ucc.server.exception.RequestProcessException;
 import com.frizo.ucc.server.exception.ResourceNotFoundException;
 import com.frizo.ucc.server.model.User;
 import com.frizo.ucc.server.payload.request.UpdateProfileRequest;
+import com.frizo.ucc.server.payload.response.bean.UserBean;
 import com.frizo.ucc.server.service.mail.GmailService;
 import com.frizo.ucc.server.service.user.UserService;
 import com.frizo.ucc.server.utils.files.FrizoFileUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Random;
 
@@ -33,9 +34,12 @@ public class UserServiceImpl implements UserService {
     private AppProperties appProperties;
 
     @Override
-    public User getUserbyId(Long id){
-        return userRepository.findById(id)
+    public UserBean getUserbyId(Long id){
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+        UserBean bean = new UserBean();
+        BeanUtils.copyProperties(user, bean);
+        return bean;
     }
 
     @Override
@@ -71,7 +75,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUserInfo(Long id, UpdateProfileRequest updateProfileRequest){
+    public UserBean updateUserInfo(Long id, UpdateProfileRequest updateProfileRequest){
         if (updateProfileRequest == null){
             throw new BadRequestException("您未上傳任何資料。");
         }
@@ -84,7 +88,10 @@ public class UserServiceImpl implements UserService {
         user.setGrade(updateProfileRequest.getGrade());
         user.setMajorSubject(updateProfileRequest.getMajorSubject());
         user.setGender(updateProfileRequest.getGender());
-        return userRepository.save(user);
+        user = userRepository.save(user);
+        UserBean bean = new UserBean();
+        BeanUtils.copyProperties(user, bean);
+        return bean;
     }
 
     @Override

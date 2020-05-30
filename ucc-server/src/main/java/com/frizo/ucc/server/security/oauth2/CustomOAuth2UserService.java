@@ -1,6 +1,6 @@
 package com.frizo.ucc.server.security.oauth2;
 
-import com.frizo.ucc.server.dao.UserRepository;
+import com.frizo.ucc.server.dao.user.UserRepository;
 import com.frizo.ucc.server.exception.OAuth2AuthenticationProcessingException;
 import com.frizo.ucc.server.model.AuthProvider;
 import com.frizo.ucc.server.model.User;

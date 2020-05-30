@@ -1,8 +1,8 @@
 package com.frizo.ucc.server.api;
 
-import com.frizo.ucc.server.model.User;
 import com.frizo.ucc.server.payload.response.ApiResponse;
 import com.frizo.ucc.server.payload.request.UpdateProfileRequest;
+import com.frizo.ucc.server.payload.response.bean.UserBean;
 import com.frizo.ucc.server.security.CurrentUser;
 import com.frizo.ucc.server.security.UserPrincipal;
 import com.frizo.ucc.server.service.user.UserService;
@@ -12,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/user")
@@ -24,8 +23,8 @@ public class UserController {
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('USER', 'GUEST')")
     public ResponseEntity<?> getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
-        User user = userService.getUserbyId(userPrincipal.getId());
-        ApiResponse<User> response = new ApiResponse<>(true, "userInfo", user);
+        UserBean userBean = userService.getUserbyId(userPrincipal.getId());
+        ApiResponse<UserBean> response = new ApiResponse<>(true, "userInfo", userBean);
         return ResponseEntity.ok(response);
     }
 
@@ -49,7 +48,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('USER', 'GUEST')")
     @PostMapping("/update/userinfo")
     public ResponseEntity<?> updateUserInfo(@CurrentUser UserPrincipal userPrincipal, @RequestBody UpdateProfileRequest updateProfileRequest) {
-        User updatedUserInfo = userService.updateUserInfo(userPrincipal.getId(), updateProfileRequest);
+        UserBean updatedUserInfo = userService.updateUserInfo(userPrincipal.getId(), updateProfileRequest);
         return ResponseEntity.ok(new ApiResponse<>(true, "個人資料修改成功", updatedUserInfo));
     }
 
@@ -68,7 +67,7 @@ public class UserController {
     public ResponseEntity<?> updateProfileBackground(@CurrentUser UserPrincipal userPrincipal, @RequestBody MultipartFile background) {
         String backgroundUrl = userService.updateProfileBackground(userPrincipal.getId(), background);
         return backgroundUrl != null ?
-                ResponseEntity.ok(new ApiResponse<>(true, "background 上傳失敗", backgroundUrl))
+                ResponseEntity.ok(new ApiResponse<>(true, "background 上傳成功", backgroundUrl))
                 :
                 ResponseEntity.ok(new ApiResponse<>(false, "background 上傳失敗", null));
     }

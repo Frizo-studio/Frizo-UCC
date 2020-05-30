@@ -1,6 +1,6 @@
 package com.frizo.ucc.server.security;
 
-import com.frizo.ucc.server.dao.UserRepository;
+import com.frizo.ucc.server.dao.user.UserRepository;
 import com.frizo.ucc.server.exception.BadRequestException;
 import com.frizo.ucc.server.exception.ResourceNotFoundException;
 import com.frizo.ucc.server.model.AuthProvider;
