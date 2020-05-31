@@ -38,29 +38,31 @@ public class EventServiceTest {
     @Test
     public void testFindAllByKeywords(){
         QueryEventRequest request = new QueryEventRequest();
-        request.setKeywords("");
+        //request.setKeywords("");
         request.setPageNumber(0);
         request.setSortBy("createdAt");
         request.setDirection("DESC");
 
-        LocalDateTime ldtA = LocalDateTime.of(2020, 5, 25, 0, 0);
-        Instant startTimeA = ldtA.toInstant(ZoneOffset.UTC);
-        System.out.println("startTimeA: " + startTimeA);
-        request.setStartTimeA(startTimeA);
-
-        LocalDateTime ldtB = LocalDateTime.of(2020, 5, 28, 0, 0);
-        Instant startTimeB = ldtB.toInstant(ZoneOffset.UTC);
-        System.out.println("startTimeB: " + startTimeB);
-        request.setStartTimeB(startTimeB);
+//        LocalDateTime ldtA = LocalDateTime.of(2020, 5, 25, 0, 0);
+//        Instant startTimeA = ldtA.toInstant(ZoneOffset.UTC);
+//        System.out.println("startTimeA: " + startTimeA);
+//        request.setStartTimeA(startTimeA);
+//
+//        LocalDateTime ldtB = LocalDateTime.of(2020, 5, 28, 0, 0);
+//        Instant startTimeB = ldtB.toInstant(ZoneOffset.UTC);
+//        System.out.println("startTimeB: " + startTimeB);
+//        request.setStartTimeB(startTimeB);
 
         List<EventBean> beans = eventService.findAllByQuerySpec(request);
         beans.forEach(bean -> {
             System.out.println("標題: " + bean.getTitle());
             System.out.println("描述: " + bean.getDescription());
             System.out.println("人氣: " + bean.getLikes());
-            bean.getLabelNameList().forEach(label -> {
-                System.out.println("標籤: " + label);
-            });
+            if (bean.getLabelNameList() != null){
+                bean.getLabelNameList().forEach(label -> {
+                    System.out.println("標籤: " + label);
+                });
+            }
             System.out.println("活動開始時間: " + bean.getEventStartTime());
             System.out.println("------------------");
         });

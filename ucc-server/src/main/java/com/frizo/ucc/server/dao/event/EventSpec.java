@@ -63,14 +63,18 @@ public class EventSpec {
                 buildTimeRangeQueryPredicate(andPredicates, cb, deadline, request.getRegistrationDeadlineA(), request.getRegistrationDeadlineB());
 
                 criteriaQuery.groupBy(root.get("id"));
+
                 Predicate[] orArray = new Predicate[orPredicates.size()];
                 Predicate orPredicate = cb.or(orPredicates.toArray(orArray));
 
                 Predicate[] andArray = new Predicate[andPredicates.size()];
                 Predicate andPredicate = cb.and(andPredicates.toArray(andArray));
 
-                Predicate finalPredicate = cb.and(andPredicate, orPredicate);
-                return finalPredicate;
+                if (orPredicates.size() != 0){
+                    return cb.and(andPredicate, orPredicate);
+                }else{
+                    return cb.and(andPredicate);
+                }
             }
         };
     }

@@ -1,5 +1,7 @@
 package com.frizo.ucc.server.payload.request;
 
+import com.frizo.ucc.server.utils.common.DateUtils;
+
 import java.time.Instant;
 
 public class QueryEventRequest {
@@ -44,32 +46,32 @@ public class QueryEventRequest {
         return this.createTimeA;
     }
 
-    public void setCreateTimeA(Instant createTimeA) {
-        this.createTimeA = createTimeA;
+    public void setCreateTimeA(String createTimeA) {
+        this.createTimeA = DateUtils.stringToStartOfDay(createTimeA);
     }
 
     public Instant getCreateTimeB() {
         return createTimeB;
     }
 
-    public void setCreateTimeB(Instant createTimeB) {
-        this.createTimeB = createTimeB;
+    public void setCreateTimeB(String createTimeB) {
+        this.createTimeB = DateUtils.stringToEndOfDay(createTimeB);
     }
 
     public Instant getStartTimeA() {
         return startTimeA;
     }
 
-    public void setStartTimeA(Instant startTimeA) {
-        this.startTimeA = startTimeA;
+    public void setStartTimeA(String startTimeA) {
+        this.startTimeA = DateUtils.stringToStartOfDay(startTimeA);
     }
 
     public Instant getStartTimeB() {
         return startTimeB;
     }
 
-    public void setStartTimeB(Instant startTimeB) {
-        this.startTimeB = startTimeB;
+    public void setStartTimeB(String startTimeB) {
+        this.startTimeB = DateUtils.stringToEndOfDay(startTimeB);
     }
 
     public String getDirection() {
@@ -92,15 +94,15 @@ public class QueryEventRequest {
         return registrationDeadlineA;
     }
 
-    public void setRegistrationDeadlineA(Instant registrationDeadlineA) {
-        this.registrationDeadlineA = registrationDeadlineA;
+    public void setRegistrationDeadlineA(String registrationDeadlineA) {
+        this.registrationDeadlineA = DateUtils.stringToStartOfDay(registrationDeadlineA);
     }
 
     public Instant getRegistrationDeadlineB() {
         return registrationDeadlineB;
     }
 
-    public void setRegistrationDeadlineB(Instant registrationDeadlineB) {
-        this.registrationDeadlineB = registrationDeadlineB;
+    public void setRegistrationDeadlineB(String registrationDeadlineB) {
+        this.registrationDeadlineB = DateUtils.stringToEndOfDay(registrationDeadlineB);
     }
 }
