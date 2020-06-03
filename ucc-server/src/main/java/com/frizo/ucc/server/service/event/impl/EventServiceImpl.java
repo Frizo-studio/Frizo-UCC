@@ -56,6 +56,11 @@ public class EventServiceImpl implements EventService {
         events.forEach(event -> {
             EventBean bean = new EventBean();
             BeanUtils.copyProperties(event, bean);
+            List<String> labelNames = new ArrayList<>();
+            event.getLabelList().forEach(label -> {
+                labelNames.add(label.getName());
+            });
+            bean.setLabelNameList(labelNames);
             eventBeans.add(bean);
         });
         return eventBeans;
@@ -76,6 +81,7 @@ public class EventServiceImpl implements EventService {
                 event.setDmUrl(dmUrl);
             }
             event.setPlace(request.getPlace());
+            event.setMaxNumberOfPeople(request.getMaxNumberOfPeople());
             event.setEventStartTime(request.getEventStartTime());
             event.setRegistrationDeadline(request.getRegistrationDeadline());
             List<Label> labels = new ArrayList<>();
