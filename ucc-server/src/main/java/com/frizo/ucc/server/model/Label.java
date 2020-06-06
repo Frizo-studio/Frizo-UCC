@@ -17,7 +17,7 @@ public class Label {
 
     // optional 為 false 時為 inner join, true 為 left join。
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="event_id")
+    //@JoinColumn(name="event_id")
     private Event event;
 
     @Column(nullable = false)

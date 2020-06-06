@@ -1,14 +1,11 @@
 package com.frizo.ucc.server.model;
 
 import com.frizo.ucc.server.model.audit.UserDateAudit;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "events")
@@ -49,12 +46,12 @@ public class Event extends UserDateAudit {
     @Column(columnDefinition = "integer default 0")
     private int likes;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(FetchMode.JOIN)
-    @BatchSize(size = 20)
+    @OneToMany(mappedBy = "event", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @Fetch(FetchMode.SELECT)
+//    @BatchSize(size = 20)
     @Size(max = 7)
-    @JoinColumn(name="event_id")
-    private List<Label> labelList;
+//    @JoinColumn(name="event_id")
+    private Set<Label> labelSet;
 
     public Long getId() {
         return id;
@@ -136,12 +133,12 @@ public class Event extends UserDateAudit {
         this.fee = fee;
     }
 
-    public List<Label> getLabelList() {
-        return labelList;
+    public Set<Label> getLabelSet() {
+        return labelSet;
     }
 
-    public void setLabelList(List<Label> labelList) {
-        this.labelList = labelList;
+    public void setLabelSet(Set<Label> labelSet) {
+        this.labelSet = labelSet;
     }
 
     public int getLikes() {

@@ -11,7 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -71,9 +71,8 @@ public class User extends UserDateAudit {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 30)
-    @Size(max = 7)
     @JoinColumn(name="user_id")
-    private List<Event> eventList;
+    private Set<Event> eventSet;
 
     public Long getId() {
         return id;
@@ -107,60 +106,20 @@ public class User extends UserDateAudit {
         this.imageUrl = imageUrl;
     }
 
-    public Boolean getEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(Boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public AuthProvider getProvider() {
-        return provider;
-    }
-
-    public void setProvider(AuthProvider provider) {
-        this.provider = provider;
-    }
-
-    public String getProviderId() {
-        return providerId;
-    }
-
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
-    }
-
-    public String getVerifyCode() {
-        return verifyCode;
-    }
-
-    public void setVerifyCode(String verifyCode) {
-        this.verifyCode = verifyCode;
-    }
-
-    public Instant getVerifyCodeUpdateAt() {
-        return verifyCodeUpdateAt;
-    }
-
-    public void setVerifyCodeUpdateAt(Instant verifyCodeUpdateAt) {
-        this.verifyCodeUpdateAt = verifyCodeUpdateAt;
-    }
-
     public String getBackgroundUrl() {
         return backgroundUrl;
     }
 
     public void setBackgroundUrl(String backgroundUrl) {
         this.backgroundUrl = backgroundUrl;
+    }
+
+    public Character getGender() {
+        return gender;
+    }
+
+    public void setGender(Character gender) {
+        this.gender = gender;
     }
 
     public int getPhoneNumber() {
@@ -211,12 +170,28 @@ public class User extends UserDateAudit {
         this.grade = grade;
     }
 
-    public Character getGender() {
-        return gender;
+    public String getDescription() {
+        return description;
     }
 
-    public void setGender(Character gender) {
-        this.gender = gender;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getSecurityCode() {
@@ -227,19 +202,43 @@ public class User extends UserDateAudit {
         this.securityCode = securityCode;
     }
 
-    public List<Event> getEventList() {
-        return eventList;
+    public AuthProvider getProvider() {
+        return provider;
     }
 
-    public void setEventList(List<Event> eventList) {
-        this.eventList = eventList;
+    public void setProvider(AuthProvider provider) {
+        this.provider = provider;
     }
 
-    public String getDescription() {
-        return description;
+    public String getProviderId() {
+        return providerId;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    public String getVerifyCode() {
+        return verifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
+    }
+
+    public Instant getVerifyCodeUpdateAt() {
+        return verifyCodeUpdateAt;
+    }
+
+    public void setVerifyCodeUpdateAt(Instant verifyCodeUpdateAt) {
+        this.verifyCodeUpdateAt = verifyCodeUpdateAt;
+    }
+
+    public Set<Event> getEventSet() {
+        return eventSet;
+    }
+
+    public void setEventSet(Set<Event> eventSet) {
+        this.eventSet = eventSet;
     }
 }

@@ -4,29 +4,28 @@ import com.frizo.ucc.server.config.AppProperties;
 import com.frizo.ucc.server.dao.event.EventRepository;
 import com.frizo.ucc.server.dao.event.EventSpec;
 import com.frizo.ucc.server.dao.user.UserRepository;
+import com.frizo.ucc.server.exception.BadRequestException;
 import com.frizo.ucc.server.exception.RequestProcessException;
+import com.frizo.ucc.server.exception.ResourceNotFoundException;
 import com.frizo.ucc.server.model.Event;
 import com.frizo.ucc.server.model.Label;
 import com.frizo.ucc.server.model.User;
 import com.frizo.ucc.server.payload.request.CreateEventRequest;
 import com.frizo.ucc.server.payload.request.QueryEventRequest;
+import com.frizo.ucc.server.payload.request.UpdateEventRequest;
 import com.frizo.ucc.server.payload.response.bean.EventBean;
 import com.frizo.ucc.server.service.event.EventService;
 import com.frizo.ucc.server.utils.common.PageRequestBuilder;
 import com.frizo.ucc.server.utils.files.FrizoFileUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -63,11 +62,11 @@ public class EventServiceImpl implements EventService {
         events.forEach(event -> {
             EventBean bean = new EventBean();
             BeanUtils.copyProperties(event, bean);
-            List<String> labelNames = new ArrayList<>();
-            event.getLabelList().forEach(label -> {
+            Set<String> labelNames = new HashSet<>();
+            event.getLabelSet().forEach(label -> {
                 labelNames.add(label.getName());
             });
-            bean.setLabelNameList(labelNames);
+            bean.setLabelNameSet(labelNames);
             eventBeans.add(bean);
         });
         return eventBeans;
@@ -91,7 +90,7 @@ public class EventServiceImpl implements EventService {
             event.setMaxNumberOfPeople(request.getMaxNumberOfPeople());
             event.setEventStartTime(request.getEventStartTime());
             event.setRegistrationDeadline(request.getRegistrationDeadline());
-            List<Label> labels = new ArrayList<>();
+            Set<Label> labels = new HashSet<>();
             Event finalEvent = event;
             request.getLabelNameList().forEach(labelName -> {
                 if (!labelName.equals("")) {
@@ -101,15 +100,15 @@ public class EventServiceImpl implements EventService {
                     labels.add(label);
                 }
             });
-            event.setLabelList(labels);
+            event.setLabelSet(labels);
             event = eventRepository.save(event);
             EventBean bean = new EventBean();
             BeanUtils.copyProperties(event, bean);
-            List<String> labelNameList = new ArrayList<>();
-            event.getLabelList().forEach(label -> {
+            Set<String> labelNameList = new HashSet<>();
+            event.getLabelSet().forEach(label -> {
                 labelNameList.add(label.getName());
             });
-            bean.setLabelNameList(labelNameList);
+            bean.setLabelNameSet(labelNameList);
             return bean;
         }catch (Exception ex){
             throw new RequestProcessException(ex.getMessage());
@@ -130,13 +129,77 @@ public class EventServiceImpl implements EventService {
         events.forEach(event -> {
             EventBean bean = new EventBean();
             BeanUtils.copyProperties(event, bean);
-            List<String> labelNames = new ArrayList<>();
-            event.getLabelList().forEach(label -> {
+            Set<String> labelNames = new HashSet<>();
+            event.getLabelSet().forEach(label -> {
                 labelNames.add(label.getName());
             });
-            bean.setLabelNameList(labelNames);
+            bean.setLabelNameSet(labelNames);
             beans.add(bean);
         });
         return beans;
+    }
+
+    @Override
+    @Transactional
+    public void deleteEvent(Long userId, Long eventId) {
+        Optional<Event> optionalEvent = eventRepository.findById(eventId);
+        if (optionalEvent.isEmpty()){
+            throw new ResourceNotFoundException("找不到活動: " + eventId);
+        }
+        Event event = optionalEvent.get();
+        if (!event.getUser().getId().equals(userId)){
+            throw new BadRequestException("您沒有權限刪除此活動");
+        }
+        eventRepository.delete(event);
+    }
+
+    @Override
+    @Transactional
+    public EventBean updateEvent(Long userId, UpdateEventRequest request) {
+        Optional<Event> eventOptional = eventRepository.findById(request.getEventId());
+        if (eventOptional.isEmpty()){
+            throw new ResourceNotFoundException("找不到活動: " + request.getEventId());
+        }
+        Event event = eventOptional.get();
+        if (!event.getUser().getId().equals(userId)){
+            throw new BadRequestException("您沒有權限修改此活動");
+        }
+        event.setTitle(request.getTitle());
+        event.setMaxNumberOfPeople(request.getMaxNumberOfPeople());
+        event.setDescription(request.getDescription());
+        event.setPlace(request.getPlace());
+        event.setRegistrationDeadline(request.getRegistrationDeadline());
+        event.setEventStartTime(request.getEventStartTime());
+        event.setFee(request.getFee());
+        try {
+            String dmName = FrizoFileUtils.storePhoto(request.getDmPicture(), appProperties.getFileDir().getDmDir());
+            if (dmName != null) {
+                String dmUrl = appProperties.getFileDir().getDmBaseUrl() + dmName;
+                event.setDmUrl(dmUrl);
+            }
+        }catch (Exception ex){
+            throw new RequestProcessException(ex.getMessage());
+        }
+        Set<Label> labels = new HashSet<>();
+        Event finalEvent = event;
+        request.getLabelNameList().forEach(labelName -> {
+            if (!labelName.equals("")) {
+                Label label = new Label();
+                label.setEvent(finalEvent);
+                label.setName(labelName);
+                labels.add(label);
+            }
+        });
+        event.getLabelSet().clear();
+        event.getLabelSet().addAll(labels);
+        event = eventRepository.save(event);
+        EventBean bean = new EventBean();
+        BeanUtils.copyProperties(event, bean);
+        Set<String> labelNameSet = new HashSet<>();
+        event.getLabelSet().forEach(label -> {
+            labelNameSet.add(label.getName());
+        });
+        bean.setLabelNameSet(labelNameSet);
+        return bean;
     }
 }

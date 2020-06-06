@@ -1,7 +1,7 @@
 package com.frizo.ucc.server.payload.response.bean;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 
 public class EventBean {
 
@@ -25,7 +25,7 @@ public class EventBean {
 
     private int likes;
 
-    private List<String> labelNameList;
+    private Set<String> labelNameSet;
 
     public Long getId() {
         return id;
@@ -99,12 +99,12 @@ public class EventBean {
         this.fee = fee;
     }
 
-    public List<String> getLabelNameList() {
-        return labelNameList;
+    public Set<String> getLabelNameSet() {
+        return labelNameSet;
     }
 
-    public void setLabelNameList(List<String> labelNameList) {
-        this.labelNameList = labelNameList;
+    public void setLabelNameSet(Set<String> labelNameSet) {
+        this.labelNameSet = labelNameSet;
     }
 
     public int getLikes() {

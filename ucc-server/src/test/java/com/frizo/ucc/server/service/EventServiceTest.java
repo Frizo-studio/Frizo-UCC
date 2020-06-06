@@ -8,18 +8,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Random;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = UccServerApplication.class)
@@ -58,8 +49,8 @@ public class EventServiceTest {
             System.out.println("標題: " + bean.getTitle());
             System.out.println("描述: " + bean.getDescription());
             System.out.println("人氣: " + bean.getLikes());
-            if (bean.getLabelNameList() != null){
-                bean.getLabelNameList().forEach(label -> {
+            if (bean.getLabelNameSet() != null){
+                bean.getLabelNameSet().forEach(label -> {
                     System.out.println("標籤: " + label);
                 });
             }

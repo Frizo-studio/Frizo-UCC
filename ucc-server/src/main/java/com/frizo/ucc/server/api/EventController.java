@@ -2,6 +2,7 @@ package com.frizo.ucc.server.api;
 
 import com.frizo.ucc.server.payload.request.CreateEventRequest;
 import com.frizo.ucc.server.payload.request.QueryEventRequest;
+import com.frizo.ucc.server.payload.request.UpdateEventRequest;
 import com.frizo.ucc.server.payload.response.ApiResponse;
 import com.frizo.ucc.server.payload.response.bean.EventBean;
 import com.frizo.ucc.server.security.CurrentUser;
@@ -38,7 +39,7 @@ public class EventController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @GetMapping("/posted")
+    @GetMapping("/my/posted")
     public ResponseEntity<?> findMyPosted(@CurrentUser UserPrincipal principal,
                                           @RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
                                           @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
@@ -49,6 +50,21 @@ public class EventController {
         System.out.println("direction: " + direction);
         List<EventBean> beans = eventService.findmyPostedEvent(principal.getId(), pageNumber, sortBy, direction);
         return ResponseEntity.ok(new ApiResponse<>(true, "成功返回查詢結果", beans));
+    }
+
+
+    @PreAuthorize("hasRole('USER')")
+    @DeleteMapping("/delete/{eventId}")
+    public ResponseEntity<?> deleteEvent(@CurrentUser UserPrincipal principal, @PathVariable("eventId") Long eventId){
+        eventService.deleteEvent(principal.getId(), eventId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "活動刪除成功。", null));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/update")
+    public ResponseEntity<?> updateEvent(@CurrentUser UserPrincipal principal, UpdateEventRequest request){
+        EventBean bean = eventService.updateEvent(principal.getId(), request);
+        return ResponseEntity.ok(new ApiResponse<>(true, "活動修改成功。", bean));
     }
 
 }

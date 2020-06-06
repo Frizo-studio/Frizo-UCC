@@ -37,7 +37,7 @@ public class EventSpec {
         return new Specification<Event>() {
             @Override
             public Predicate toPredicate(Root<Event> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
-                Join<Event, Label> labelJoin = root.join("labelList", JoinType.LEFT);
+                Join<Event, Label> labelJoin = root.join("labelSet", JoinType.LEFT);
                 Path<String> title = root.get("title");
                 Path<String> description = root.get("description");
                 List<Predicate> orPredicates = new ArrayList<>();
