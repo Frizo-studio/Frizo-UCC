@@ -14,4 +14,6 @@ public interface EventService {
 
     EventBean createEvent(Long userId, CreateEventRequest request);
 
+    List<EventBean> findmyPostedEvent(Long userId, int pageNumber, String sortBy, String direction);
+
 }

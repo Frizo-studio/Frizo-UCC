@@ -8,6 +8,8 @@ import com.frizo.ucc.server.security.CurrentUser;
 import com.frizo.ucc.server.security.UserPrincipal;
 import com.frizo.ucc.server.service.event.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,20 @@ public class EventController {
     public ResponseEntity<?> findEvent(@RequestBody QueryEventRequest request) {
         System.out.println("keywords: " + request.getKeywords());
         List<EventBean> beans = eventService.findAllByQuerySpec(request);
+        return ResponseEntity.ok(new ApiResponse<>(true, "成功返回查詢結果", beans));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/posted")
+    public ResponseEntity<?> findMyPosted(@CurrentUser UserPrincipal principal,
+                                          @RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
+                                          @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
+                                          @RequestParam(value = "direction", required = false, defaultValue = "DESC") String direction){
+        System.out.println("id: " + principal.getId());
+        System.out.println("pageNumber: " + pageNumber);
+        System.out.println("sortBy: " + sortBy);
+        System.out.println("direction: " + direction);
+        List<EventBean> beans = eventService.findmyPostedEvent(principal.getId(), pageNumber, sortBy, direction);
         return ResponseEntity.ok(new ApiResponse<>(true, "成功返回查詢結果", beans));
     }
 
