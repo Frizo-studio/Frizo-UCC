@@ -15,5 +15,5 @@ import java.util.Optional;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
 
-    Page<Event> findAllByUserOrderByCreatedAt(User user, Pageable pageable);
+    Page<Event> findAllByUser(User user, Pageable pageable);
 }

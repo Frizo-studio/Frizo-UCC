@@ -124,7 +124,7 @@ public class EventServiceImpl implements EventService {
                 .direction(direction)
                 .sortBy(sortBy)
                 .build();
-        Page<Event> events = eventRepository.findAllByUserOrderByCreatedAt(user, pageRequest);
+        Page<Event> events = eventRepository.findAllByUser(user, pageRequest);
         List<EventBean> beans = new ArrayList<>();
         events.forEach(event -> {
             EventBean bean = new EventBean();

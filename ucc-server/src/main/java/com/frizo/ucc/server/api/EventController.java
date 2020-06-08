@@ -33,7 +33,6 @@ public class EventController {
 
     @PostMapping("/find")
     public ResponseEntity<?> findEvent(@RequestBody QueryEventRequest request) {
-        System.out.println("keywords: " + request.getKeywords());
         List<EventBean> beans = eventService.findAllByQuerySpec(request);
         return ResponseEntity.ok(new ApiResponse<>(true, "成功返回查詢結果", beans));
     }
@@ -44,10 +43,6 @@ public class EventController {
                                           @RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
                                           @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
                                           @RequestParam(value = "direction", required = false, defaultValue = "DESC") String direction){
-        System.out.println("id: " + principal.getId());
-        System.out.println("pageNumber: " + pageNumber);
-        System.out.println("sortBy: " + sortBy);
-        System.out.println("direction: " + direction);
         List<EventBean> beans = eventService.findmyPostedEvent(principal.getId(), pageNumber, sortBy, direction);
         return ResponseEntity.ok(new ApiResponse<>(true, "成功返回查詢結果", beans));
     }
