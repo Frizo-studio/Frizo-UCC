@@ -11,14 +11,19 @@ import com.frizo.ucc.server.payload.request.UpdateProfileRequest;
 import com.frizo.ucc.server.payload.response.bean.UserBean;
 import com.frizo.ucc.server.service.mail.GmailService;
 import com.frizo.ucc.server.service.user.UserService;
+import com.frizo.ucc.server.utils.common.PageRequestBuilder;
 import com.frizo.ucc.server.utils.files.FrizoFileUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -126,5 +131,21 @@ public class UserServiceImpl implements UserService {
             throw new InternalSeverErrorException("文件伺服器發生錯誤問題", ex);
         }
         return user.getBackgroundUrl();
+    }
+
+    @Override
+    public List<UserBean> findUserByKeywords(String keywords, int page) {
+        Pageable pageRequest = PageRequestBuilder.create()
+                .pageNumber(page)
+                .pageSize(10)
+                .build();
+        Page<User> users = userRepository.findAllByEmailOrNameContains(keywords, keywords, pageRequest);
+        List<UserBean> userBeanList = new ArrayList<>();
+        users.forEach(user -> {
+            UserBean bean = new UserBean();
+            BeanUtils.copyProperties(user, bean);
+            userBeanList.add(bean);
+        });
+        return userBeanList;
     }
 }

@@ -4,6 +4,8 @@ import com.frizo.ucc.server.payload.request.UpdateProfileRequest;
 import com.frizo.ucc.server.payload.response.bean.UserBean;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface UserService {
     UserBean getUserbyId(Long id);
 
@@ -16,4 +18,6 @@ public interface UserService {
     String updateUserAvatar(Long id, MultipartFile avatar);
 
     String updateProfileBackground(Long id, MultipartFile background);
+
+    List<UserBean> findUserByKeywords(String keywords, int page);
 }

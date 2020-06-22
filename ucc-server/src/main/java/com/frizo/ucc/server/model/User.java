@@ -68,6 +68,9 @@ public class User extends UserDateAudit {
 
     private Instant verifyCodeUpdateAt;
 
+    @Column(nullable = false)
+    private boolean activelyAcceptFollowRequest = false;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 30)

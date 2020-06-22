@@ -12,6 +12,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/user")
@@ -70,6 +73,19 @@ public class UserController {
                 ResponseEntity.ok(new ApiResponse<>(true, "background 上傳成功", backgroundUrl))
                 :
                 ResponseEntity.ok(new ApiResponse<>(false, "background 上傳失敗", null));
+    }
+
+    @GetMapping("/find")
+    public ResponseEntity<?> findUsersByName(@RequestParam(name = "keywords") @NotBlank String keywords,
+                                            @RequestParam(name = "page", defaultValue = "0") int page) {
+        List<UserBean> beans = userService.findUserByKeywords(keywords, page);
+        return ResponseEntity.ok(new ApiResponse<>(true, "返回找到的用戶", beans));
+    }
+
+    @GetMapping("get/info")
+    public ResponseEntity<?> getUserInfoById(@RequestParam(name = "id") @NotBlank Long id) {
+        UserBean bean = userService.getUserbyId(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "返回找到的用戶資料", bean));
     }
 
 }
