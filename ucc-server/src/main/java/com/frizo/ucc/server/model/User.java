@@ -244,4 +244,12 @@ public class User extends UserDateAudit {
     public void setEventSet(Set<Event> eventSet) {
         this.eventSet = eventSet;
     }
+
+    public boolean isActivelyAcceptFollowRequest() {
+        return activelyAcceptFollowRequest;
+    }
+
+    public void setActivelyAcceptFollowRequest(boolean activelyAcceptFollowRequest) {
+        this.activelyAcceptFollowRequest = activelyAcceptFollowRequest;
+    }
 }

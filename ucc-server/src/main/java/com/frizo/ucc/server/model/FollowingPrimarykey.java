@@ -1,8 +1,12 @@
 package com.frizo.ucc.server.model;
 
+import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Embeddable
 public class FollowingPrimarykey implements Serializable {
 
     private Long userId;
@@ -38,8 +42,8 @@ public class FollowingPrimarykey implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FollowingPrimarykey that = (FollowingPrimarykey) o;
-        return getUserId().equals(that.getUserId()) &&
-                getFollowingUserId().equals(that.getFollowingUserId());
+        return Objects.equals(getUserId(), that.getUserId()) &&
+                Objects.equals(getFollowingUserId(), that.getFollowingUserId());
     }
 
     @Override

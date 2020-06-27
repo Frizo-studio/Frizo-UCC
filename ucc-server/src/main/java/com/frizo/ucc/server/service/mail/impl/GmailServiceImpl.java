@@ -32,7 +32,8 @@ public class GmailServiceImpl implements GmailService {
                     true);
             mailSender.send(mimeMessage);
         } catch (Exception ex) {
-            throw new InternalSeverErrorException("GmailService encounter some problems");
+
+            throw new InternalSeverErrorException("GmailService encounter some problems", ex);
         }
     }
 
@@ -53,7 +54,7 @@ public class GmailServiceImpl implements GmailService {
             messageHelper.setTo(to);
             mailSender.send(mimeMessage);
         } catch (Exception ex) {
-            throw new InternalSeverErrorException("GmailService encounter some problems");
+            throw new InternalSeverErrorException("GmailService encounter some problems", ex);
         }
     }
 }

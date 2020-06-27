@@ -14,32 +14,48 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "user_following")
-@IdClass(FollowingPrimarykey.class)
 public class Following extends UserDateAudit {
 
-    @Id
-    private Long userId;
+    @EmbeddedId
+    private FollowingPrimarykey followingPrimarykey;
 
-    @Id
-    private Long followingUserId;
+
+    @MapsId("userId")
+    @ManyToOne
+    @JoinColumn(name="userId")
+    private User user;
+
+    @MapsId("followingUserId")
+    @ManyToOne
+    @JoinColumn(name="followingUserId")
+    private User followingUser;
+
 
     @Column(nullable = false)
     private boolean accepted = false;
 
-    public Long getUserId() {
-        return userId;
+    public FollowingPrimarykey getFollowingPrimarykey() {
+        return followingPrimarykey;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setFollowingPrimarykey(FollowingPrimarykey followingPrimarykey) {
+        this.followingPrimarykey = followingPrimarykey;
     }
 
-    public Long getFollowingUserId() {
-        return followingUserId;
+    public User getUser() {
+        return user;
     }
 
-    public void setFollowingUserId(Long followingUserId) {
-        this.followingUserId = followingUserId;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getFollowingUser() {
+        return followingUser;
+    }
+
+    public void setFollowingUser(User followingUser) {
+        this.followingUser = followingUser;
     }
 
     public boolean isAccepted() {
