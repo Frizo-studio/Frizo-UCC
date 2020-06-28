@@ -20,4 +20,6 @@ public interface UserService {
     String updateProfileBackground(Long id, MultipartFile background);
 
     List<UserBean> findUserByKeywords(String keywords, int page);
+
+    UserBean updateUserActivelyAcceptFollowRequest(Long id, boolean isAllow);
 }

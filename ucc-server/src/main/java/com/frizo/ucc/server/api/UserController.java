@@ -88,6 +88,14 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse<>(true, "返回找到的用戶資料", bean));
     }
 
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/setting/auto/accept/following")
+    public ResponseEntity<?> getUserInfoById(@CurrentUser UserPrincipal principal,
+                                             @RequestParam(name = "isAllow") @NotBlank boolean isAllow) {
+        UserBean bean = userService.updateUserActivelyAcceptFollowRequest(principal.getId(), isAllow);
+        return ResponseEntity.ok(new ApiResponse<>(true, "返回找到的用戶資料", bean));
+    }
+
 }
 
 

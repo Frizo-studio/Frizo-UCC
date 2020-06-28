@@ -148,4 +148,14 @@ public class UserServiceImpl implements UserService {
         });
         return userBeanList;
     }
+
+    @Override
+    public UserBean updateUserActivelyAcceptFollowRequest(Long id, boolean isAllow) {
+        User user = userRepository.getOne(id);
+        user.setActivelyAcceptFollowRequest(isAllow);
+        user = userRepository.save(user);
+        UserBean bean = new UserBean();
+        BeanUtils.copyProperties(user, bean);
+        return bean;
+    }
 }
