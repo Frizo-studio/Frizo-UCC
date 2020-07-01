@@ -33,6 +33,8 @@ public class UserBean {
 
     private AuthProvider provider;
 
+    private boolean activelyAcceptFollowRequest;
+
     public Long getId() {
         return id;
     }
@@ -151,5 +153,13 @@ public class UserBean {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isActivelyAcceptFollowRequest() {
+        return activelyAcceptFollowRequest;
+    }
+
+    public void setActivelyAcceptFollowRequest(boolean activelyAcceptFollowRequest) {
+        this.activelyAcceptFollowRequest = activelyAcceptFollowRequest;
     }
 }
