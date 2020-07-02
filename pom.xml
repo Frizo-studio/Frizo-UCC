@@ -14,7 +14,7 @@
         <spring.boot.version>2.2.1.RELEASE</spring.boot.version>
         <spring.version>5.2.1.RELEASE</spring.version>
         <jjwt.version>0.10.7</jjwt.version>
-        <mysql.version>8.0.11</mysql.version>
+        <mysql.version>8.0.16</mysql.version>
         <javaxb.version>2.3.0</javaxb.version>
         <junit.version>4.12</junit.version>
         <google.service.version>v1-rev382-1.25.0</google.service.version>
