@@ -2,6 +2,7 @@ package com.frizo.ucc.server.api;
 
 import com.frizo.ucc.server.payload.response.ApiResponse;
 import com.frizo.ucc.server.payload.request.UpdateProfileRequest;
+import com.frizo.ucc.server.payload.response.UserNoticeCount;
 import com.frizo.ucc.server.payload.response.bean.UserBean;
 import com.frizo.ucc.server.security.CurrentUser;
 import com.frizo.ucc.server.security.UserPrincipal;
@@ -26,6 +27,7 @@ public class UserController {
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('USER', 'GUEST')")
     public ResponseEntity<?> getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+        System.out.println("Name: " + userPrincipal.getName());
         UserBean userBean = userService.getUserbyId(userPrincipal.getId());
         ApiResponse<UserBean> response = new ApiResponse<>(true, "userInfo", userBean);
         return ResponseEntity.ok(response);
@@ -94,6 +96,13 @@ public class UserController {
                                              @RequestParam(name = "isAllow") @NotBlank boolean isAllow) {
         UserBean bean = userService.updateUserActivelyAcceptFollowRequest(principal.getId(), isAllow);
         return ResponseEntity.ok(new ApiResponse<>(true, "返回找到的用戶資料", bean));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/get/notice/count")
+    public ResponseEntity<?> getNoticeCount(@CurrentUser UserPrincipal principal){
+        UserNoticeCount noticeCount = userService.getUserNoticeCount(principal.getId());
+        return ResponseEntity.ok(new ApiResponse<>(true, "返回用戶的通知數量", noticeCount));
     }
 
 }

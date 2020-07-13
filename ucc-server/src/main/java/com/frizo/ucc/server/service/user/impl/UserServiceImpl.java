@@ -1,13 +1,16 @@
 package com.frizo.ucc.server.service.user.impl;
 
 import com.frizo.ucc.server.config.AppProperties;
+import com.frizo.ucc.server.dao.notice.UserNoticeRepository;
 import com.frizo.ucc.server.dao.user.UserRepository;
 import com.frizo.ucc.server.exception.BadRequestException;
 import com.frizo.ucc.server.exception.InternalSeverErrorException;
 import com.frizo.ucc.server.exception.RequestProcessException;
 import com.frizo.ucc.server.exception.ResourceNotFoundException;
 import com.frizo.ucc.server.model.User;
+import com.frizo.ucc.server.model.UserNotice;
 import com.frizo.ucc.server.payload.request.UpdateProfileRequest;
+import com.frizo.ucc.server.payload.response.UserNoticeCount;
 import com.frizo.ucc.server.payload.response.bean.UserBean;
 import com.frizo.ucc.server.service.mail.GmailService;
 import com.frizo.ucc.server.service.user.UserService;
@@ -24,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -34,6 +38,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private GmailService gmailService;
+
+    @Autowired
+    private UserNoticeRepository userNoticeRepository;
 
     @Autowired
     private AppProperties appProperties;
@@ -157,5 +164,25 @@ public class UserServiceImpl implements UserService {
         UserBean bean = new UserBean();
         BeanUtils.copyProperties(user, bean);
         return bean;
+    }
+
+    @Override
+    public UserNoticeCount getUserNoticeCount(Long id){
+        User user = userRepository.getOne(id);
+        Optional<UserNotice> noticeOptional = userNoticeRepository.findById(id);
+        UserNoticeCount noticeCount = new UserNoticeCount();
+        UserNotice userNotice;
+        if (noticeOptional.isEmpty()){
+            userNotice = new UserNotice();
+            userNotice.setUser(user);
+            userNotice.setFollowingNoticeCount(0);
+            userNotice.setEventNotiveCount(0);
+            userNotice.setChatNoticeCount(0);
+            userNotice = userNoticeRepository.save(userNotice);
+        }else{
+            userNotice = noticeOptional.get();
+        }
+        BeanUtils.copyProperties(userNotice, noticeCount);
+        return noticeCount;
     }
 }

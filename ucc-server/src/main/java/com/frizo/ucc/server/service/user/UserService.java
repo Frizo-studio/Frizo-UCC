@@ -1,6 +1,7 @@
 package com.frizo.ucc.server.service.user;
 
 import com.frizo.ucc.server.payload.request.UpdateProfileRequest;
+import com.frizo.ucc.server.payload.response.UserNoticeCount;
 import com.frizo.ucc.server.payload.response.bean.UserBean;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,4 +23,6 @@ public interface UserService {
     List<UserBean> findUserByKeywords(String keywords, int page);
 
     UserBean updateUserActivelyAcceptFollowRequest(Long id, boolean isAllow);
+
+    UserNoticeCount getUserNoticeCount(Long id);
 }
