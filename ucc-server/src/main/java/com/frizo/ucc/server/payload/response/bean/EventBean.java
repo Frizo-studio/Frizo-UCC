@@ -19,6 +19,8 @@ public class EventBean {
 
     private Instant eventStartTime;
 
+    private Instant createAt;
+
     private String place;
 
     private int fee;
@@ -113,5 +115,13 @@ public class EventBean {
 
     public void setLikes(int likes) {
         this.likes = likes;
+    }
+
+    public Instant getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(Instant createAt) {
+        this.createAt = createAt;
     }
 }
