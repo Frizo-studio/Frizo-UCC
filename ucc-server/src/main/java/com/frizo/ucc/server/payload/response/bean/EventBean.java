@@ -19,7 +19,7 @@ public class EventBean {
 
     private Instant eventStartTime;
 
-    private Instant createAt;
+    private Instant createdAt;
 
     private String place;
 
@@ -117,11 +117,11 @@ public class EventBean {
         this.likes = likes;
     }
 
-    public Instant getCreateAt() {
-        return createAt;
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreateAt(Instant createAt) {
-        this.createAt = createAt;
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 }
