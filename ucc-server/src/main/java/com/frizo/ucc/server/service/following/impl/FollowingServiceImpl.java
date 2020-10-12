@@ -102,7 +102,7 @@ public class FollowingServiceImpl implements FollowingService {
 
                 UserNoticeCount noticeCount = new UserNoticeCount();
                 BeanUtils.copyProperties(userNotice, noticeCount);
-                pushNoticeService.sendUserNoticeCount(targetUser.getId().toString(), noticeCount);
+                pushNoticeService.sendUserNoticeCount(targetUser.getEmail(), noticeCount);
             }
         });
 

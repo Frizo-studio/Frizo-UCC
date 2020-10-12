@@ -15,5 +15,7 @@ public class PushNoticeServiceImpl implements PushNoticeService {
     @Override
     public void sendUserNoticeCount(String to, UserNoticeCount userNoticeCount) {
         simpMessagingTemplate.convertAndSendToUser(to, "/topic/response", userNoticeCount);
+        //simpMessagingTemplate.convertAndSend("/topic/response", userNoticeCount);
+        System.out.println("訊息送出: " + to);
     }
 }
