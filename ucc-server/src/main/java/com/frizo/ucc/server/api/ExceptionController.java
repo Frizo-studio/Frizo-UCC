@@ -2,6 +2,7 @@ package com.frizo.ucc.server.api;
 
 import com.frizo.ucc.server.exception.*;
 import com.frizo.ucc.server.payload.response.ApiResponse;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -85,5 +86,12 @@ public class ExceptionController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiResponse<>(false, ex.getMessage(), null));
     }
+
+    @ExceptionHandler(ConversionFailedException.class)
+    public ResponseEntity<?> handleConflict(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiResponse<>(false, "ENUM 參數輸入有誤", null));
+    }
+
 
 }

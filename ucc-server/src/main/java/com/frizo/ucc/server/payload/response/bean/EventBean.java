@@ -23,11 +23,21 @@ public class EventBean {
 
     private String place;
 
+    private String posterName;
+
     private int fee;
 
     private int likes;
 
     private Set<String> labelNameSet;
+
+    public String getPosterName() {
+        return posterName;
+    }
+
+    public void setPosterName(String posterName) {
+        this.posterName = posterName;
+    }
 
     public Long getId() {
         return id;

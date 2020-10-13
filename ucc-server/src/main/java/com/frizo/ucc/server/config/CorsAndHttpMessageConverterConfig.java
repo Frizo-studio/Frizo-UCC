@@ -1,11 +1,13 @@
 package com.frizo.ucc.server.config;
 
+import com.frizo.ucc.server.utils.converter.String2NoticeTypeEnumConverter;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class CorsConfig implements WebMvcConfigurer {
+public class CorsAndHttpMessageConverterConfig implements WebMvcConfigurer {
     private final long MAX_AGE_SECS = 3600;
 
     @Override
@@ -16,5 +18,10 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(true)
                 .maxAge(MAX_AGE_SECS);
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new String2NoticeTypeEnumConverter());
     }
 }

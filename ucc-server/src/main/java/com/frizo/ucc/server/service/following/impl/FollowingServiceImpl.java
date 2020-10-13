@@ -11,7 +11,7 @@ import com.frizo.ucc.server.model.UserNotice;
 import com.frizo.ucc.server.payload.response.UserNoticeCount;
 import com.frizo.ucc.server.payload.response.bean.UserBean;
 import com.frizo.ucc.server.service.following.FollowingService;
-import com.frizo.ucc.server.service.notice.PushNoticeService;
+import com.frizo.ucc.server.service.notice.NoticeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ public class FollowingServiceImpl implements FollowingService {
     UserNoticeRepository userNoticeRepository;
 
     @Autowired
-    PushNoticeService pushNoticeService;
+    NoticeService noticeService;
 
     @Override
     public List<UserBean> findAllMyFollowing(Long userId, boolean accepted) {
@@ -76,19 +76,26 @@ public class FollowingServiceImpl implements FollowingService {
         User requester = userRepository.getOne(requesterId);
         Optional<User> targetOptional = userRepository.findById(followingUserId);
         targetOptional.ifPresent(targetUser -> {
+            Optional<Following> followingOptional = followingRepository.findById(new FollowingPrimarykey(requesterId, followingUserId));
             Following following = new Following();
-            following.setFollowingPrimarykey(new FollowingPrimarykey(requesterId, followingUserId));
-            following.setUser(requester);
-            following.setFollowingUser(targetUser);
-            following.setAccepted(targetUser.isActivelyAcceptFollowRequest());
-            followingRepository.save(following);
+            followingOptional.ifPresentOrElse(
+                    (f) -> {
+                        return;
+                    },
+                    ()->{
+                        following.setFollowingPrimarykey(new FollowingPrimarykey(requesterId, followingUserId));
+                        following.setUser(requester);
+                        following.setFollowingUser(targetUser);
+                        following.setAccepted(targetUser.isActivelyAcceptFollowRequest());
+                        followingRepository.save(following);
+                    });
+
 
             if (!following.isAccepted()) { // 建立 Notice
                 Optional<UserNotice> targetUserNotice = userNoticeRepository.findById(targetUser.getId());
                 UserNotice userNotice;
                 if (targetUserNotice.isEmpty()){
                     userNotice = new UserNotice();
-                    //userNotice.setId(targetUser.getId());
                     userNotice.setUser(targetUser);
                     userNotice.setChatNoticeCount(0);
                     userNotice.setEventNotiveCount(0);
@@ -102,7 +109,7 @@ public class FollowingServiceImpl implements FollowingService {
 
                 UserNoticeCount noticeCount = new UserNoticeCount();
                 BeanUtils.copyProperties(userNotice, noticeCount);
-                pushNoticeService.sendUserNoticeCount(targetUser.getEmail(), noticeCount);
+                noticeService.sendUserNoticeCount(targetUser.getEmail(), noticeCount);
             }
         });
 
@@ -110,7 +117,6 @@ public class FollowingServiceImpl implements FollowingService {
             throw new ResourceNotFoundException("追蹤用戶不存在");
         }
     }
-
 
 
     @Override

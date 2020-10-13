@@ -62,6 +62,7 @@ public class EventServiceImpl implements EventService {
         events.forEach(event -> {
             EventBean bean = new EventBean();
             BeanUtils.copyProperties(event, bean);
+            bean.setPosterName(event.getUser().getName());
             Set<String> labelNames = new HashSet<>();
             event.getLabelSet().forEach(label -> {
                 labelNames.add(label.getName());
