@@ -37,6 +37,12 @@ public class EventController {
         return ResponseEntity.ok(new ApiResponse<>(true, "成功返回查詢結果", beans));
     }
 
+    @GetMapping("/get/{eventId}")
+    public ResponseEntity<?> getEventById(@PathVariable("eventId") long eventId){
+        EventBean bean = eventService.getById(eventId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "成功返回查詢結果", bean));
+    }
+
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/my/posted")
     public ResponseEntity<?> findMyPosted(@CurrentUser UserPrincipal principal,
@@ -60,6 +66,13 @@ public class EventController {
     public ResponseEntity<?> updateEvent(@CurrentUser UserPrincipal principal, UpdateEventRequest request){
         EventBean bean = eventService.updateEvent(principal.getId(), request);
         return ResponseEntity.ok(new ApiResponse<>(true, "活動修改成功。", bean));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/apply")
+    public ResponseEntity<?> applyEvent(@CurrentUser UserPrincipal principal, @RequestParam("eventId") Long eventId){
+        // TO-DO
+        return ResponseEntity.ok(new ApiResponse<>(true, "活動刪除成功。", null));
     }
 
 }
