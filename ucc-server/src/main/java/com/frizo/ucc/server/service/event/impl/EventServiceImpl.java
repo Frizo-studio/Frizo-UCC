@@ -42,9 +42,11 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventBean getById(Long id) {
-        Event event = eventRepository.getOne(id);
         EventBean bean = new EventBean();
-        BeanUtils.copyProperties(event, bean);
+        Optional<Event> eventOptional = eventRepository.findById(id);
+        eventOptional.ifPresent(event -> {
+            BeanUtils.copyProperties(event, bean);
+        });
         return bean;
     }
 

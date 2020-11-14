@@ -38,8 +38,9 @@ public class EventController {
     }
 
     @GetMapping("/get/{eventId}")
-    public ResponseEntity<?> getEventById(@PathVariable("eventId") long eventId){
-        EventBean bean = eventService.getById(eventId);
+    public ResponseEntity<?> getEventById(@PathVariable("eventId") String eventId){
+        Long id = Long.valueOf(eventId);
+        EventBean bean = eventService.getById(id);
         return ResponseEntity.ok(new ApiResponse<>(true, "成功返回查詢結果", bean));
     }
 
