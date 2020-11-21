@@ -46,6 +46,12 @@ public class EventServiceImpl implements EventService {
         Optional<Event> eventOptional = eventRepository.findById(id);
         eventOptional.ifPresent(event -> {
             BeanUtils.copyProperties(event, bean);
+            bean.setPosterName(event.getUser().getName());
+            Set<String> labelNames = new HashSet<>();
+            event.getLabelSet().forEach(label -> {
+                labelNames.add(label.getName());
+            });
+            bean.setLabelNameSet(labelNames);
         });
         return bean;
     }
