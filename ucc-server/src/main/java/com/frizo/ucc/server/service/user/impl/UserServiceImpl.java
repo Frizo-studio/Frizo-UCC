@@ -144,10 +144,12 @@ public class UserServiceImpl implements UserService {
     public List<UserBean> findUserByKeywords(String keywords, int page) {
         Pageable pageRequest = PageRequestBuilder.create()
                 .pageNumber(page)
-                .pageSize(10)
+                .pageSize(5)
                 .build();
         Page<User> users = userRepository.findAllByEmailOrNameContains(keywords, keywords, pageRequest);
+        //List<User> users = userRepository.findAllByEmailOrNameContains(keywords, keywords);
         List<UserBean> userBeanList = new ArrayList<>();
+
         users.forEach(user -> {
             UserBean bean = new UserBean();
             BeanUtils.copyProperties(user, bean);

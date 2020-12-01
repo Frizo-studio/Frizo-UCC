@@ -78,4 +78,10 @@ public class AuthControllerTest {
         System.out.println(result.getResponse().getContentAsString());
     }
 
+
+    public static void main(String[] args) {
+        String a = String.format("%%%s%%", "老王");
+        System.out.println(a);
+    }
+
 }

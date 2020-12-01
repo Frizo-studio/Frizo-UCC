@@ -81,6 +81,10 @@ public class UserController {
     public ResponseEntity<?> findUsersByName(@RequestParam(name = "keywords") @NotBlank String keywords,
                                             @RequestParam(name = "page", defaultValue = "0") int page) {
         List<UserBean> beans = userService.findUserByKeywords(keywords, page);
+        beans.forEach(b->{
+            System.out.println(b.getName());
+            System.out.println(b.getEmail());
+        });
         return ResponseEntity.ok(new ApiResponse<>(true, "返回找到的用戶", beans));
     }
 
