@@ -15,10 +15,9 @@ public interface EventService {
 
     EventBean createEvent(Long userId, CreateEventRequest request);
 
-    List<EventBean> findmyPostedEvent(Long userId, int pageNumber, String sortBy, String direction);
+    List<EventBean> findPostedEventByUserId(Long userId, int pageNumber, String sortBy, String direction);
 
     void deleteEvent(Long userId, Long eventId);
 
     EventBean updateEvent(Long userId, UpdateEventRequest request);
-
 }

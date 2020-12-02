@@ -50,7 +50,7 @@ public class EventController {
                                           @RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
                                           @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
                                           @RequestParam(value = "direction", required = false, defaultValue = "DESC") String direction){
-        List<EventBean> beans = eventService.findmyPostedEvent(principal.getId(), pageNumber, sortBy, direction);
+        List<EventBean> beans = eventService.findPostedEventByUserId(principal.getId(), pageNumber, sortBy, direction);
         return ResponseEntity.ok(new ApiResponse<>(true, "成功返回查詢結果", beans));
     }
 
@@ -67,6 +67,15 @@ public class EventController {
     public ResponseEntity<?> updateEvent(@CurrentUser UserPrincipal principal, UpdateEventRequest request){
         EventBean bean = eventService.updateEvent(principal.getId(), request);
         return ResponseEntity.ok(new ApiResponse<>(true, "活動修改成功。", bean));
+    }
+
+    @GetMapping("/find/by/user/id")
+    public ResponseEntity<?> findAllByUserId(@RequestParam(value = "userId", required = true) Long userId,
+                                             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
+                                             @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
+                                             @RequestParam(value = "direction", required = false, defaultValue = "DESC") String direction){
+        List<EventBean> beans = eventService.findPostedEventByUserId(userId, pageNumber, sortBy, direction);
+        return ResponseEntity.ok(new ApiResponse<>(true, "成功返回查詢結果", beans));
     }
 
     @PreAuthorize("hasRole('USER')")

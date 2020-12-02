@@ -125,7 +125,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventBean> findmyPostedEvent(Long userId, int pageNumber, String sortBy, String direction) {
+    public List<EventBean> findPostedEventByUserId(Long userId, int pageNumber, String sortBy, String direction) {
         User user = userRepository.getOne(userId);
         Pageable pageRequest = PageRequestBuilder.create()
                 .pageNumber(pageNumber)
@@ -211,4 +211,5 @@ public class EventServiceImpl implements EventService {
         bean.setLabelNameSet(labelNameSet);
         return bean;
     }
+
 }
