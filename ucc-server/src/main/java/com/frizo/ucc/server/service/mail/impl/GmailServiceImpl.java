@@ -57,4 +57,22 @@ public class GmailServiceImpl implements GmailService {
             throw new InternalSeverErrorException("GmailService encounter some problems", ex);
         }
     }
+
+    @Override
+    public void sendFollowingRequestMessage(String to, String requesterName) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            messageHelper.setFrom("FrizoStudio@gmail.com");
+            messageHelper.setSubject("UCC: 您有有新的追蹤請求申請，快來看看吧!");
+            messageHelper.setText(
+                    "<p>您好，" + requesterName + "向您提出了追蹤請求，快來登入答應他吧!。</p>" +
+                            "<p>請勿直接回覆信件，謝謝配合。",
+                    true);
+            messageHelper.setTo(to);
+            mailSender.send(mimeMessage);
+        } catch (Exception ex) {
+            throw new InternalSeverErrorException("GmailService encounter some problems", ex);
+        }
+    }
 }

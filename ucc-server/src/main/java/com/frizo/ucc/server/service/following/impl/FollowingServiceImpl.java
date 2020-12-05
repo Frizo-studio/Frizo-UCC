@@ -11,6 +11,7 @@ import com.frizo.ucc.server.model.UserNotice;
 import com.frizo.ucc.server.payload.response.UserNoticeCount;
 import com.frizo.ucc.server.payload.response.bean.UserBean;
 import com.frizo.ucc.server.service.following.FollowingService;
+import com.frizo.ucc.server.service.mail.GmailService;
 import com.frizo.ucc.server.service.notice.NoticeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class FollowingServiceImpl implements FollowingService {
 
     @Autowired
     NoticeService noticeService;
+
+    @Autowired
+    GmailService gmailService;
 
     @Override
     public List<UserBean> findAllMyFollowing(Long userId, boolean accepted) {
@@ -110,6 +114,7 @@ public class FollowingServiceImpl implements FollowingService {
                 UserNoticeCount noticeCount = new UserNoticeCount();
                 BeanUtils.copyProperties(userNotice, noticeCount);
                 noticeService.sendUserNoticeCount(targetUser.getEmail(), noticeCount);
+                gmailService.sendFollowingRequestMessage(targetUser.getEmail(), requester.getName());
             }
         });
 

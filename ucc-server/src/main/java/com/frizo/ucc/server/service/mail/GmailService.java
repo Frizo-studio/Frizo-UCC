@@ -4,4 +4,6 @@ public interface GmailService {
     void sendEmailVerifiyCode(String to, String verifiyCode);
 
     void sendForgotPasswordVerifiyCode(String to, String verifiyCode);
+
+    void sendFollowingRequestMessage(String to, String requesterName);
 }
