@@ -1,6 +1,8 @@
 package com.frizo.ucc.server.service.mail.impl;
 
 import com.frizo.ucc.server.exception.InternalSeverErrorException;
+import com.frizo.ucc.server.payload.response.bean.EventBean;
+import com.frizo.ucc.server.payload.response.bean.UserBean;
 import com.frizo.ucc.server.service.mail.GmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -8,6 +10,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GmailServiceImpl implements GmailService {
@@ -70,6 +74,32 @@ public class GmailServiceImpl implements GmailService {
                             "<p>請勿直接回覆信件，謝謝配合。",
                     true);
             messageHelper.setTo(to);
+            mailSender.send(mimeMessage);
+        } catch (Exception ex) {
+            throw new InternalSeverErrorException("GmailService encounter some problems", ex);
+        }
+    }
+
+    @Override
+    public void sendEventNoticeToFollowers(List<UserBean> users, EventBean eventBean) {
+        List<String> emailList = users.stream()
+                .map(UserBean::getEmail)
+                .collect(Collectors.toList());
+
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            messageHelper.setFrom("FrizoStudio@gmail.com");
+            messageHelper.setSubject("UCC: 您有新的訊息!");
+            messageHelper.setText(
+                        "<p>" + eventBean.getPosterName() +" 剛剛發布了一個新的活動喔!。</p>" +
+                             "<p>" + "活動名稱: " + eventBean.getTitle() + "</p>" +
+                             "<p>" + "活動說明: " + eventBean.getDescription() + "</p>" +
+                             "<p>" + "活動海報: " + "<img src=\"" + eventBean.getDmUrl() + "\">" + "</p>" +
+                             "<p>更多詳細內容請至站內察看喔。</p>" +
+                             "<p>請勿直接回覆信件，謝謝配合。",
+                    true);
+            messageHelper.setTo((String[]) emailList.toArray());
             mailSender.send(mimeMessage);
         } catch (Exception ex) {
             throw new InternalSeverErrorException("GmailService encounter some problems", ex);

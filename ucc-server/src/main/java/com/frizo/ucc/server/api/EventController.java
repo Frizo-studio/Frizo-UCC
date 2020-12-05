@@ -8,6 +8,8 @@ import com.frizo.ucc.server.payload.response.bean.EventBean;
 import com.frizo.ucc.server.security.CurrentUser;
 import com.frizo.ucc.server.security.UserPrincipal;
 import com.frizo.ucc.server.service.event.EventService;
+import com.frizo.ucc.server.service.following.FollowingService;
+import com.frizo.ucc.server.service.notice.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Param;
@@ -24,10 +26,14 @@ public class EventController {
     @Autowired
     EventService eventService;
 
+    @Autowired
+    NoticeService noticeService;
+
     @PostMapping("/create")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createEvent(@CurrentUser UserPrincipal userPrincipal, CreateEventRequest request) {
         EventBean bean = eventService.createEvent(userPrincipal.getId(), request);
+        noticeService.sendEventNoticeToFollowers(userPrincipal.getId(), bean);
         return ResponseEntity.ok(new ApiResponse<>(true, "活動建立成功", bean));
     }
 

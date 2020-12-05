@@ -5,12 +5,17 @@ import com.frizo.ucc.server.dao.user.UserRepository;
 import com.frizo.ucc.server.model.User;
 import com.frizo.ucc.server.model.UserNotice;
 import com.frizo.ucc.server.payload.response.UserNoticeCount;
+import com.frizo.ucc.server.payload.response.bean.EventBean;
+import com.frizo.ucc.server.payload.response.bean.UserBean;
+import com.frizo.ucc.server.service.following.FollowingService;
+import com.frizo.ucc.server.service.mail.GmailService;
 import com.frizo.ucc.server.service.notice.NoticeType;
 import com.frizo.ucc.server.service.notice.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +29,12 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    FollowingService followingService;
+
+    @Autowired
+    GmailService gmailService;
 
     @Override
     public void sendUserNoticeCount(String to, UserNoticeCount userNoticeCount) {
@@ -55,5 +66,23 @@ public class NoticeServiceImpl implements NoticeService {
             }
             userNoticeRepository.save(userNotice);
         });
+    }
+
+    @Override
+    public void sendEventNoticeToFollowers(Long userId, EventBean eventBean) {
+        List<UserBean> followers = followingService.findAllMyFollowers(userId, true);
+        // 處理寄信邏輯 -------
+        gmailService.sendEventNoticeToFollowers(followers, eventBean);
+        // -------------------
+
+//        followers.forEach(user -> {
+//            String user =
+//        });
+//
+//        // 處理站內推波邏輯 -------
+//        followers.forEach(user -> {
+//            simpMessagingTemplate.convertAndSendToUser(user.getEmail(),);
+//        });
+//        // -------------------
     }
 }
