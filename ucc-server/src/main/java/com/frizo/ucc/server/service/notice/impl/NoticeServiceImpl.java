@@ -11,11 +11,14 @@ import com.frizo.ucc.server.service.following.FollowingService;
 import com.frizo.ucc.server.service.mail.GmailService;
 import com.frizo.ucc.server.service.notice.NoticeType;
 import com.frizo.ucc.server.service.notice.NoticeService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -48,7 +51,7 @@ public class NoticeServiceImpl implements NoticeService {
         User user = userRepository.getOne(userId);
         Optional<UserNotice> noticeOptional = userNoticeRepository.findByUser(user);
         noticeOptional.ifPresent(userNotice -> {
-            switch (noticeType){
+            switch (noticeType) {
                 case CHAT:
                     userNotice.setChatNoticeCount(0);
                     break;
@@ -75,14 +78,33 @@ public class NoticeServiceImpl implements NoticeService {
         gmailService.sendEventNoticeToFollowers(followers, eventBean);
         // -------------------
 
-//        followers.forEach(user -> {
-//            String user =
-//        });
-//
-//        // 處理站內推波邏輯 -------
-//        followers.forEach(user -> {
-//            simpMessagingTemplate.convertAndSendToUser(user.getEmail(),);
-//        });
-//        // -------------------
+        // 取出 userNoticeCount，用 map 裝 Map<Email, UserNotiveCount>
+        Map<String, UserNotice> emailMapNoticeCount = new HashMap<>();
+
+        followers.forEach(user -> {
+            Optional<UserNotice> noticeOption = userNoticeRepository.findById(user.getId());
+            noticeOption.ifPresentOrElse(notice -> {
+                notice.setEventNotiveCount(notice.getChatNoticeCount()+1);
+                userNoticeRepository.save(notice);
+                emailMapNoticeCount.put(user.getEmail(), notice);
+                    },
+                    () -> {
+                    UserNotice notice = new UserNotice();
+                    notice.setEventNotiveCount(1);
+                    notice.setFollowingNoticeCount(0);
+                    notice.setChatNoticeCount(0);
+                    notice.setId(userId);
+                    userNoticeRepository.save(notice);
+                    emailMapNoticeCount.put(user.getEmail(), notice);
+                    });
+        });
+
+        // 處理站內推波邏輯 -------
+        emailMapNoticeCount.forEach((email, notice) -> {
+            UserNoticeCount userNoticeCount = new UserNoticeCount();
+            BeanUtils.copyProperties(notice, userNoticeCount);
+            simpMessagingTemplate.convertAndSendToUser(email, "/topic/response", userNoticeCount);
+        });
+        // -------------------
     }
 }

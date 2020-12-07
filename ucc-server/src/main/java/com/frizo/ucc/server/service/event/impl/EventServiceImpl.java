@@ -118,6 +118,7 @@ public class EventServiceImpl implements EventService {
                 labelNameList.add(label.getName());
             });
             bean.setLabelNameSet(labelNameList);
+            bean.setPosterName(user.getName());
             return bean;
         }catch (Exception ex){
             throw new RequestProcessException(ex.getMessage());
