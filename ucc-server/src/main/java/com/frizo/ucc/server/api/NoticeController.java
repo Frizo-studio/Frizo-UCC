@@ -56,8 +56,9 @@ public class NoticeController {
 
     @GetMapping("/clear/all/my/event/message")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> readEventMessage(@CurrentUser UserPrincipal principal) {
+    public ResponseEntity<?> clearAllEventMessage(@CurrentUser UserPrincipal principal) {
         noticeService.clearAllMyEventNotice(principal.getId());
+        noticeService.clearNoticeCount(NoticeType.EVENT, principal.getId());
         return ResponseEntity.ok(new ApiResponse<>(true, "已清空所有活動消息: ", null));
     }
 
