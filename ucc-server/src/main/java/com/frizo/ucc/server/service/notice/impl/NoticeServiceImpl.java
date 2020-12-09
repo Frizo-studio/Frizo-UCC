@@ -84,7 +84,7 @@ public class NoticeServiceImpl implements NoticeService {
         followers.forEach(user -> {
             Optional<UserNotice> noticeOption = userNoticeRepository.findById(user.getId());
             noticeOption.ifPresentOrElse(notice -> {
-                notice.setEventNotiveCount(notice.getChatNoticeCount()+1);
+                notice.setEventNotiveCount(notice.getEventNotiveCount()+1);
                 userNoticeRepository.save(notice);
                 emailMapNoticeCount.put(user.getEmail(), notice);
                     },
