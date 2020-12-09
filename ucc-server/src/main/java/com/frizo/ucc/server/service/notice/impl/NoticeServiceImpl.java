@@ -100,18 +100,18 @@ public class NoticeServiceImpl implements NoticeService {
 
             Optional<UserNotice> noticeOption = userNoticeRepository.findById(user.getId());
             noticeOption.ifPresentOrElse(notice -> {
-                notice.setEventNotiveCount(notice.getEventNotiveCount()+1);
-                userNoticeRepository.save(notice);
-                emailMapNoticeCount.put(user.getEmail(), notice);
+                        notice.setEventNotiveCount(notice.getEventNotiveCount() + 1);
+                        userNoticeRepository.save(notice);
+                        emailMapNoticeCount.put(user.getEmail(), notice);
                     },
                     () -> {
-                    UserNotice notice = new UserNotice();
-                    notice.setEventNotiveCount(1);
-                    notice.setFollowingNoticeCount(0);
-                    notice.setChatNoticeCount(0);
-                    notice.setId(userId);
-                    userNoticeRepository.save(notice);
-                    emailMapNoticeCount.put(user.getEmail(), notice);
+                        UserNotice notice = new UserNotice();
+                        notice.setEventNotiveCount(1);
+                        notice.setFollowingNoticeCount(0);
+                        notice.setChatNoticeCount(0);
+                        notice.setId(userId);
+                        userNoticeRepository.save(notice);
+                        emailMapNoticeCount.put(user.getEmail(), notice);
                     });
         });
 
@@ -125,23 +125,24 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     private void createEventNoticeMessageToFollowers(Long userId, Long eventId, List<UserBean> followers) {
-        new Thread(() -> {
-            Event event = eventRepository.getOne(eventId);
-            User poster = userRepository.getOne(userId);
-            followers.forEach(follower -> {
-                User user = userRepository.getOne(follower.getId());
-                EventNotice eventNotice = new EventNotice();
-                eventNotice.setEvent(event);
-                eventNotice.setUser(user);
-                eventNotice.setReaded(false);
-                eventNotice.setCreatedAt(Instant.now());
-                eventNotice.setUpdatedAt(Instant.now());
-                eventNotice.setCreatedBy(poster.getId());
-                eventNotice.setUpdatedBy(poster.getId());
-                eventNotice.setMessage(poster.getName()+ "剛剛發布了新的活動: " + event.getTitle() + "，快來看看吧!");
-                eventNoticeRepository.save(eventNotice);
-            });
-        }).start();
+        Event event = eventRepository.getOne(eventId);
+        System.out.println("event in createEventNoticeMessageToFollowers: " + event.getTitle());
+        User poster = userRepository.getOne(userId);
+        System.out.println("posterName: " + poster.getName());
+        followers.forEach(follower -> {
+            User user = userRepository.getOne(follower.getId());
+            System.out.println("追蹤者: " + user.getName());
+            EventNotice eventNotice = new EventNotice();
+            eventNotice.setEvent(event);
+            eventNotice.setUser(user);
+            eventNotice.setReaded(false);
+            eventNotice.setCreatedAt(Instant.now());
+            eventNotice.setUpdatedAt(Instant.now());
+            eventNotice.setCreatedBy(poster.getId());
+            eventNotice.setUpdatedBy(poster.getId());
+            eventNotice.setMessage(poster.getName() + "剛剛發布了新的活動: " + event.getTitle() + "，快來看看吧!");
+            eventNoticeRepository.save(eventNotice);
+        });
     }
 
     @Override
@@ -155,13 +156,14 @@ public class NoticeServiceImpl implements NoticeService {
         Page<EventNotice> eventNoticePage = eventNoticeRepository.findAllByUser(user, pageRequest);
         List<EventNoticeBean> eventNoticeBeanList = new ArrayList<>();
         eventNoticePage.forEach(eNotice -> {
+            User poster = userRepository.getOne(eNotice.getCreatedBy());
             EventNoticeBean bean = new EventNoticeBean();
             bean.setEventId(eNotice.getEvent().getId());
             bean.setEventNoticeId(eNotice.getId());
             bean.setMessage(eNotice.getMessage());
-            bean.setPosterId(eNotice.getUser().getId());
-            bean.setPosterAvaterUrl(eNotice.getUser().getImageUrl());
-            bean.setPosterName(eNotice.getUser().getName());
+            bean.setPosterId(poster.getId());
+            bean.setPosterAvaterUrl(poster.getImageUrl());
+            bean.setPosterName(poster.getName());
             bean.setReaded(eNotice.isReaded());
             bean.setCreatedAt(eNotice.getCreatedAt());
             eventNoticeBeanList.add(bean);
@@ -175,9 +177,9 @@ public class NoticeServiceImpl implements NoticeService {
         EventNotice eventNotice = eventNoticeRepository.getOne(eventNoticeId);
         eventNotice.setReaded(true);
         Optional<UserNotice> userNoticeOptional = userNoticeRepository.findByUser(user);
-        userNoticeOptional.ifPresent(notice ->{
+        userNoticeOptional.ifPresent(notice -> {
             int eventNoticeCount = notice.getEventNotiveCount();
-            if (eventNoticeCount > 0){
+            if (eventNoticeCount > 0) {
                 eventNoticeCount = eventNoticeCount - 1;
                 notice.setEventNotiveCount(eventNoticeCount);
                 UserNoticeCount userNoticeCount = new UserNoticeCount();

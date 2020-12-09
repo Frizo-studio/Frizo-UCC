@@ -14,12 +14,10 @@ public class EventNotice extends UserDateAudit implements Serializable {
     @Column(name = "event_notice_id")
     private Long id;
 
-    @MapsId
     @OneToOne
     @JoinColumn(name="user_id")
     private User user;
 
-    @MapsId
     @OneToOne
     @JoinColumn(name="event_id")
     private Event event;
