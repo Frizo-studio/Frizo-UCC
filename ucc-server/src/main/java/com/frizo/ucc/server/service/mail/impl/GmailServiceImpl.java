@@ -88,41 +88,42 @@ public class GmailServiceImpl implements GmailService {
 
     @Override
     public void sendEventNoticeToFollowers(List<UserBean> users, EventBean eventBean) {
+        new Thread(()-> {
+            String dmDir = appProperties.getFileDir().getDmDir();
+            String[] urlSplit = eventBean.getDmUrl().split("/");
+            String fileName = urlSplit[urlSplit.length-1];
+            String filePath = dmDir + "/" + fileName;
 
-        String dmDir = appProperties.getFileDir().getDmDir();
-        String[] urlSplit = eventBean.getDmUrl().split("/");
-        String fileName = urlSplit[urlSplit.length-1];
-        String filePath = dmDir + "/" + fileName;
+            List<String> emailList = users.stream()
+                    .map(UserBean::getEmail)
+                    .collect(Collectors.toList());
 
-        List<String> emailList = users.stream()
-                .map(UserBean::getEmail)
-                .collect(Collectors.toList());
+            String[] targets = new String[emailList.size()];
 
-        String[] targets = new String[emailList.size()];
+            for(int i = 0; i < emailList.size(); i++){
+                targets[i] = emailList.get(i);
+            }
 
-        for(int i = 0; i < emailList.size(); i++){
-            targets[i] = emailList.get(i);
-        }
-
-        try {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            messageHelper.setFrom("FrizoStudio@gmail.com");
-            messageHelper.setSubject("UCC: 您有新的訊息!");
-            messageHelper.setText(
+            try {
+                MimeMessage mimeMessage = mailSender.createMimeMessage();
+                MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                messageHelper.setFrom("FrizoStudio@gmail.com");
+                messageHelper.setSubject("UCC: 您有新的訊息!");
+                messageHelper.setText(
                         "<p>" + eventBean.getPosterName() +" 剛剛發布了一個新的活動喔!。</p>" +
-                             "<p>" + "活動名稱: " + eventBean.getTitle() + "</p>" +
-                             "<p>" + "活動說明: " + eventBean.getDescription() + "</p>" +
-                             "<p>更多詳細內容請至站內察看喔。</p>" +
-                             "<p>請勿直接回覆信件，謝謝配合。",
-                    true);
+                                "<p>" + "活動名稱: " + eventBean.getTitle() + "</p>" +
+                                "<p>" + "活動說明: " + eventBean.getDescription() + "</p>" +
+                                "<p>更多詳細內容請至站內察看喔。</p>" +
+                                "<p>請勿直接回覆信件，謝謝配合。",
+                        true);
 
-            FileSystemResource file = new FileSystemResource(filePath);
-            messageHelper.addAttachment(eventBean.getTitle()+".jpg", file);
-            messageHelper.setTo(targets);
-            mailSender.send(mimeMessage);
-        } catch (Exception ex) {
-            throw new InternalSeverErrorException("GmailService encounter some problems", ex);
-        }
+                FileSystemResource file = new FileSystemResource(filePath);
+                messageHelper.addAttachment(eventBean.getTitle()+".jpg", file);
+                messageHelper.setTo(targets);
+                mailSender.send(mimeMessage);
+            } catch (Exception ex) {
+                throw new InternalSeverErrorException("GmailService encounter some problems", ex);
+            }
+        }).start();
     }
 }

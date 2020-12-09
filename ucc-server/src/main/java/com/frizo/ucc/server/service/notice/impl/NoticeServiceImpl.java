@@ -1,25 +1,31 @@
 package com.frizo.ucc.server.service.notice.impl;
 
+import com.frizo.ucc.server.dao.event.EventRepository;
+import com.frizo.ucc.server.dao.notice.EventNoticeRepository;
 import com.frizo.ucc.server.dao.notice.UserNoticeRepository;
 import com.frizo.ucc.server.dao.user.UserRepository;
+import com.frizo.ucc.server.model.Event;
+import com.frizo.ucc.server.model.EventNotice;
 import com.frizo.ucc.server.model.User;
 import com.frizo.ucc.server.model.UserNotice;
 import com.frizo.ucc.server.payload.response.UserNoticeCount;
 import com.frizo.ucc.server.payload.response.bean.EventBean;
+import com.frizo.ucc.server.payload.response.bean.EventNoticeBean;
 import com.frizo.ucc.server.payload.response.bean.UserBean;
 import com.frizo.ucc.server.service.following.FollowingService;
 import com.frizo.ucc.server.service.mail.GmailService;
 import com.frizo.ucc.server.service.notice.NoticeType;
 import com.frizo.ucc.server.service.notice.NoticeService;
+import com.frizo.ucc.server.utils.common.PageRequestBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.Instant;
+import java.util.*;
 
 @Service
 public class NoticeServiceImpl implements NoticeService {
@@ -31,10 +37,16 @@ public class NoticeServiceImpl implements NoticeService {
     UserNoticeRepository userNoticeRepository;
 
     @Autowired
+    EventRepository eventRepository;
+
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
     FollowingService followingService;
+
+    @Autowired
+    EventNoticeRepository eventNoticeRepository;
 
     @Autowired
     GmailService gmailService;
@@ -74,6 +86,9 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public void sendEventNoticeToFollowers(Long userId, EventBean eventBean) {
         List<UserBean> followers = followingService.findAllMyFollowers(userId, true);
+
+        createEventNoticeMessageToFollowers(userId, eventBean.getId(), followers);
+
         // 處理寄信邏輯 -------
         gmailService.sendEventNoticeToFollowers(followers, eventBean);
         // -------------------
@@ -82,6 +97,7 @@ public class NoticeServiceImpl implements NoticeService {
         Map<String, UserNotice> emailMapNoticeCount = new HashMap<>();
 
         followers.forEach(user -> {
+
             Optional<UserNotice> noticeOption = userNoticeRepository.findById(user.getId());
             noticeOption.ifPresentOrElse(notice -> {
                 notice.setEventNotiveCount(notice.getEventNotiveCount()+1);
@@ -106,5 +122,76 @@ public class NoticeServiceImpl implements NoticeService {
             simpMessagingTemplate.convertAndSendToUser(email, "/topic/response", userNoticeCount);
         });
         // -------------------
+    }
+
+    private void createEventNoticeMessageToFollowers(Long userId, Long eventId, List<UserBean> followers) {
+        new Thread(() -> {
+            Event event = eventRepository.getOne(eventId);
+            User poster = userRepository.getOne(userId);
+            followers.forEach(follower -> {
+                User user = userRepository.getOne(follower.getId());
+                EventNotice eventNotice = new EventNotice();
+                eventNotice.setEvent(event);
+                eventNotice.setUser(user);
+                eventNotice.setReaded(false);
+                eventNotice.setCreatedAt(Instant.now());
+                eventNotice.setUpdatedAt(Instant.now());
+                eventNotice.setCreatedBy(poster.getId());
+                eventNotice.setUpdatedBy(poster.getId());
+                eventNotice.setMessage(poster.getName()+ "剛剛發布了新的活動: " + event.getTitle() + "，快來看看吧!");
+                eventNoticeRepository.save(eventNotice);
+            });
+        }).start();
+    }
+
+    @Override
+    public List<EventNoticeBean> findAllMyEventNoticeBySpec(Long id, int page) {
+        Pageable pageRequest = PageRequestBuilder.create()
+                .pageNumber(page)
+                .pageSize(10)
+                .build();
+
+        User user = userRepository.getOne(id);
+        Page<EventNotice> eventNoticePage = eventNoticeRepository.findAllByUser(user, pageRequest);
+        List<EventNoticeBean> eventNoticeBeanList = new ArrayList<>();
+        eventNoticePage.forEach(eNotice -> {
+            EventNoticeBean bean = new EventNoticeBean();
+            bean.setEventId(eNotice.getEvent().getId());
+            bean.setEventNoticeId(eNotice.getId());
+            bean.setMessage(eNotice.getMessage());
+            bean.setPosterId(eNotice.getUser().getId());
+            bean.setPosterAvaterUrl(eNotice.getUser().getImageUrl());
+            bean.setPosterName(eNotice.getUser().getName());
+            bean.setReaded(eNotice.isReaded());
+            bean.setCreatedAt(eNotice.getCreatedAt());
+            eventNoticeBeanList.add(bean);
+        });
+        return eventNoticeBeanList;
+    }
+
+    @Override
+    public void readEventNotice(Long userId, Long eventNoticeId) {
+        User user = userRepository.getOne(userId);
+        EventNotice eventNotice = eventNoticeRepository.getOne(eventNoticeId);
+        eventNotice.setReaded(true);
+        Optional<UserNotice> userNoticeOptional = userNoticeRepository.findByUser(user);
+        userNoticeOptional.ifPresent(notice ->{
+            int eventNoticeCount = notice.getEventNotiveCount();
+            if (eventNoticeCount > 0){
+                eventNoticeCount = eventNoticeCount - 1;
+                notice.setEventNotiveCount(eventNoticeCount);
+                UserNoticeCount userNoticeCount = new UserNoticeCount();
+                BeanUtils.copyProperties(notice, userNoticeCount);
+                userNoticeRepository.save(notice);
+                simpMessagingTemplate.convertAndSendToUser(user.getEmail(), "/topic/response", userNoticeCount);
+            }
+        });
+        eventNoticeRepository.save(eventNotice);
+    }
+
+    @Override
+    public void clearAllMyEventNotice(Long userId) {
+        User user = userRepository.getOne(userId);
+        eventNoticeRepository.deleteAllByUser(user);
     }
 }
