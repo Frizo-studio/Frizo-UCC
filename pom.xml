@@ -12,7 +12,7 @@
 
     <properties>
         <spring.boot.version>2.2.1.RELEASE</spring.boot.version>
-        <spring.version>5.2.1.RELEASE</spring.version>
+        <spring.version>5.2.11.RELEASE</spring.version>
         <jjwt.version>0.10.7</jjwt.version>
         <mysql.version>8.0.11</mysql.version>
         <javaxb.version>2.3.0</javaxb.version>
